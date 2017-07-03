@@ -1,15 +1,16 @@
 import React from 'react';
 import { Route, IndexRoute, Router, browserHistory } from 'react-router';
-import ViewItem from './containers/show_list_item';
 
-import Header from './components/header';
-import Main from './components/main';
+import App from './components/App';
+import LoginPage from './components/Login/LoginPage';
+import SignupPage from './components/Login/SignupPage';
 
 export default (
+
     <Router history={ browserHistory } >
-        <Route path="/" component={Header}>
-            <IndexRoute component={Main} />
-            <Route path="view/:name" component={ViewItem} />
+        <Route path="/" component={ App }>
+            <IndexRoute component={ LoginPage }/>
+            <Route path="/signup" component={ SignupPage }></Route>
         </Route>
     </Router>
-)
+);

@@ -1,8 +1,7 @@
 import { combineReducers } from 'redux';
-import Lists from './lists';
+// rootReducers
+import signup from './signupReducers';
 
-const rootReducer = combineReducers({
-    lists: Lists
+export default combineReducers({
+    signup: signup,
 });
-
-export default rootReducer;

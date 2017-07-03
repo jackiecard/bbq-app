@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 var nodeExternals = require('webpack-node-externals');
+var LiveReloadPlugin = require('webpack-livereload-plugin');
+
 
 module.exports = [
     {
@@ -18,7 +20,10 @@ module.exports = [
         }]
     },
     target: 'node',
-    externals: [nodeExternals()]
+    externals: [nodeExternals()],
+    plugins: [
+        new LiveReloadPlugin()
+    ]
     //If you want to minify your files uncomment this
     // ,
     // plugins: [
@@ -33,7 +38,7 @@ module.exports = [
     // ]
     },
     {
-        entry: './views/index.js',
+        entry: './views/src/index.js',
         output: {
             path: __dirname + '/bin',
             filename: 'app.bundle.js',
