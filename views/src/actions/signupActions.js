@@ -4,3 +4,23 @@ export const signupUser = (signup) => {
         signup
     }
 }
+
+export const testeSuccess = (teste) => {
+    return {
+        type: 'TESTE',
+        teste
+    }
+}
+
+
+export const teste = () => {
+    return (dispatch) => {
+        return Axios.get('/teste')
+            .then(response => {
+                dispatch(testeSuccess(response.data))
+            })
+            .catch(error =>{
+                throw(error)
+            });
+    }
+}

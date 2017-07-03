@@ -101,6 +101,23 @@ var signupUser = exports.signupUser = function signupUser(signup) {
     };
 };
 
+var testeSuccess = exports.testeSuccess = function testeSuccess(teste) {
+    return {
+        type: 'TESTE',
+        teste: teste
+    };
+};
+
+var teste = exports.teste = function teste() {
+    return function (dispatch) {
+        return Axios.get('/teste').then(function (response) {
+            dispatch(testeSuccess(response.data));
+        }).catch(function (error) {
+            throw error;
+        });
+    };
+};
+
 /***/ }),
 /* 4 */
 /***/ (function(module, exports) {
@@ -208,6 +225,8 @@ router.get('/', function (req, res) {
 			res.status(404).send('Not found');
 		}
 	});
+}).get('/teste', function (req, res) {
+	res.json("testando...");
 });
 
 /*
@@ -521,12 +540,16 @@ var _signupReducers = __webpack_require__(12);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
+var _testeReducers = __webpack_require__(15);
+
+var _testeReducers2 = _interopRequireDefault(_testeReducers);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _redux.combineReducers)({
-    signup: _signupReducers2.default
-});
 // rootReducers
+exports.default = (0, _redux.combineReducers)({
+    signup: _signupReducers2.default, teste: _testeReducers2.default
+});
 
 /***/ }),
 /* 12 */
@@ -598,6 +621,29 @@ exports.default = _react2.default.createElement(
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case 'TESTE':
+            return action;
+        default:
+            return state;
+    }
+};
 
 /***/ })
 /******/ ]);

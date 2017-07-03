@@ -65,7 +65,13 @@ router.get('/', (req, res) => {
 			res.status(404).send('Not found')
 		}
 	})
+})
+
+.get('/teste', (req, res) => {
+    res.json("testando...")
 });
+
+
 
 
 /*
