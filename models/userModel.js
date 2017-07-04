@@ -8,3 +8,5 @@ let UserModelSchema = new Schema({
 });
 
 let UserModel = mongoose.model('UserModel', UserModelSchema);
+
+export default UserModel;
