@@ -3,20 +3,31 @@ import router from './routes/index';
 import api from './routes/api';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import config from './config';
 
 let app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-//db options
-let options = {
-                server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-                replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } }
-              };
+// //db options
+// let options = {
+//                 server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+//                 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } }
+//               };
 
+// native promise
+mongoose.Promise = global.Promise;
 // db connection
-mongoose.connect('mongodb://127.0.0.1:27017', options);
+mongoose.connect(config.mongoURI[app.settings.env], (err, res) => {
+    if(err){
+        console.log('Error connecting to the database. ' + err);
+    }
+    else {
+        console.log('Connected to Database: ' + config.mongoURI[app.settings.env]);
+    }
+});
+
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 

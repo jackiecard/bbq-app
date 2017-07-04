@@ -245,7 +245,7 @@ exports.default = router;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _express = __webpack_require__(2);
@@ -268,6 +268,10 @@ var _bodyParser = __webpack_require__(19);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
+var _config = __webpack_require__(20);
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -275,14 +279,23 @@ var app = (0, _express2.default)();
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: true }));
 
-//db options
-var options = {
-  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
-};
+// //db options
+// let options = {
+//                 server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+//                 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } }
+//               };
 
+// native promise
+_mongoose2.default.Promise = global.Promise;
 // db connection
-_mongoose2.default.connect('mongodb://127.0.0.1:27017', options);
+_mongoose2.default.connect(_config2.default.mongoURI[app.settings.env], function (err, res) {
+    if (err) {
+        console.log('Error connecting to the database. ' + err);
+    } else {
+        console.log('Connected to Database: ' + _config2.default.mongoURI[app.settings.env]);
+    }
+});
+
 var db = _mongoose2.default.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -296,7 +309,7 @@ app.use('/api', _api2.default);
 app.use('/api/*', _api2.default);
 
 app.listen(3000, function () {
-  console.log('Hello World listening on port 3000!');
+    console.log('Hello World listening on port 3000!');
 });
 
 exports.default = app;
@@ -708,14 +721,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var api = _express2.default.Router();
 
 api.route('/users').get(function (req, res) {
-    // UserModel.find((err, users) => {
-    //     if(err)
-    //         res.send(err)
-    //
-    //     res.json(users)
-    //
-    // })
-    res.json("ok");
+    _userModel2.default.find(function (err, users) {
+        if (err) res.send(err);
+
+        res.json(users);
+    });
 }).post(function (req, res) {
     var user = new _userModel2.default();
     user.email = req.body.email;
@@ -791,6 +801,25 @@ exports.default = UserModel;
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var config = {};
+
+config.mongoURI = {
+  development: 'mongodb://localhost/node-testing',
+  test: 'mongodb://localhost/node-test'
+};
+
+exports.default = config;
 
 /***/ })
 /******/ ]);

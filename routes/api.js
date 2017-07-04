@@ -6,14 +6,13 @@ let api = express.Router();
 
 api.route('/users')
     .get((req, res) => {
-        // UserModel.find((err, users) => {
-        //     if(err)
-        //         res.send(err)
-        //
-        //     res.json(users)
-        //
-        // })
-        res.json("ok")
+        UserModel.find((err, users) => {
+            if(err)
+                res.send(err)
+
+            res.json(users)
+
+        })
     })
     .post((req, res) => {
         var user =  new UserModel();
