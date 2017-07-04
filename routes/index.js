@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
@@ -9,6 +10,18 @@ import { Provider } from 'react-redux';
 import { SIGNUP_SUCCESS } from '../views/src/actions/signupActions';
 
 let router = express.Router();
+
+//db options
+let options = {
+                server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+                replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } }
+              };
+
+// db connection
+mongoose.connect('mongodb://127.0.0.1/my_database', options);
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+
 
 router.get('/', (req, res) => {
     /*
@@ -65,9 +78,10 @@ router.get('/', (req, res) => {
 			res.status(404).send('Not found')
 		}
 	})
-})
+});
 
-.get('/teste', (req, res) => {
+router.get('/teste', (req, res) => {
+    
     res.json("testando...")
 });
 
@@ -88,8 +102,6 @@ function renderFullPage(html, initialState) {
     	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     	<meta http-equiv="x-ua-compatible" content="ie=edge">
     	<title>React Router Redux Express</title>
-
-    	<!-- Bootstrap CSS -->
     </head>
     <body>
 

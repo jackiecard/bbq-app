@@ -138,24 +138,28 @@ module.exports = require("redux");
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _express = __webpack_require__(2);
 
 var _express2 = _interopRequireDefault(_express);
 
+var _mongoose = __webpack_require__(15);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(14);
+var _server = __webpack_require__(16);
 
 var _server2 = _interopRequireDefault(_server);
 
 var _reactRouter = __webpack_require__(1);
 
-var _routes = __webpack_require__(13);
+var _routes = __webpack_require__(14);
 
 var _routes2 = _interopRequireDefault(_routes);
 
@@ -173,60 +177,74 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var router = _express2.default.Router();
 
+//db options
+var options = {
+  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+};
+
+// db connection
+_mongoose2.default.connect('mongodb://127.0.0.1/my_database', options);
+var db = _mongoose2.default.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+
 router.get('/', function (req, res) {
-	/*
- Here we are first matching if the current url exists in the react router routes
-  */
-	(0, _reactRouter.match)({ routes: _routes2.default, location: req.originalUrl }, function (error, redirectLocation, renderProps) {
-		if (error) {
-			res.status(500).send(error.message);
-		} else if (redirectLocation) {
-			res.redirect(302, redirectLocation.pathname + redirectLocation.search);
-		} else if (renderProps) {
+  /*
+  Here we are first matching if the current url exists in the react router routes
+   */
+  (0, _reactRouter.match)({ routes: _routes2.default, location: req.originalUrl }, function (error, redirectLocation, renderProps) {
+    if (error) {
+      res.status(500).send(error.message);
+    } else if (redirectLocation) {
+      res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+    } else if (renderProps) {
 
-			/*
-          http://redux.js.org/docs/recipes/ServerRendering.html
-    */
-			var store = (0, _redux.createStore)(_index2.default);
+      /*
+             http://redux.js.org/docs/recipes/ServerRendering.html
+       */
+      var store = (0, _redux.createStore)(_index2.default);
 
-			var html = _server2.default.renderToString(_react2.default.createElement(
-				_reactRedux.Provider,
-				{ store: store },
-				_react2.default.createElement(_reactRouter.RouterContext, renderProps)
-			));
+      var html = _server2.default.renderToString(_react2.default.createElement(
+        _reactRedux.Provider,
+        { store: store },
+        _react2.default.createElement(_reactRouter.RouterContext, renderProps)
+      ));
 
-			/*
-   We can dispatch actions from server side as well. This can be very useful if you want
-   to inject some initial data into the app. For example, if you have some articles that
-   you have fetched from database and you want to load immediately after the user has loaded
-   the webpage, you can do so in here.
-   	Here we are inject an list item into our app. Normally once the user has loaded the webpage
-   we would make a request to the server and get the latest item list. But in the server we have
-   instant connection to a database (for example, if you have a mongoDB or MySQL database installed
-   in the server which contains all you items). So you can quickly fetch and inject it into the webpage.
-   	This will help SEO as well. If you load the webpage and make a request to the server to get all the
-   latest items/articles, by the time Google Search Engine may not see all the updated items/articles.
-   	But if you inject the latest items/articles before it reaches the user, the Search Engine will see the
-   item/article immediately.
-    */
-			// store.dispatch({
-			//     type: SIGNUP_SUCCESS,
-			//     payload: {
-			//         login: 'user',
-			//         password: 'pass',
-			//         confirm: 'pass'
-			//     }
-			// });
+      /*
+      We can dispatch actions from server side as well. This can be very useful if you want
+      to inject some initial data into the app. For example, if you have some articles that
+      you have fetched from database and you want to load immediately after the user has loaded
+      the webpage, you can do so in here.
+      	Here we are inject an list item into our app. Normally once the user has loaded the webpage
+      we would make a request to the server and get the latest item list. But in the server we have
+      instant connection to a database (for example, if you have a mongoDB or MySQL database installed
+      in the server which contains all you items). So you can quickly fetch and inject it into the webpage.
+      	This will help SEO as well. If you load the webpage and make a request to the server to get all the
+      latest items/articles, by the time Google Search Engine may not see all the updated items/articles.
+      	But if you inject the latest items/articles before it reaches the user, the Search Engine will see the
+      item/article immediately.
+       */
+      // store.dispatch({
+      //     type: SIGNUP_SUCCESS,
+      //     payload: {
+      //         login: 'user',
+      //         password: 'pass',
+      //         confirm: 'pass'
+      //     }
+      // });
 
-			var finalState = store.getState();
+      var finalState = store.getState();
 
-			res.status(200).send(renderFullPage(html, finalState));
-		} else {
-			res.status(404).send('Not found');
-		}
-	});
-}).get('/teste', function (req, res) {
-	res.json("testando...");
+      res.status(200).send(renderFullPage(html, finalState));
+    } else {
+      res.status(404).send('Not found');
+    }
+  });
+});
+
+router.get('/teste', function (req, res) {
+
+  res.json("testando...");
 });
 
 /*
@@ -234,7 +252,7 @@ In this function, you can render you html part of the webpage. You can add some 
 using JS variables.
  */
 function renderFullPage(html, initialState) {
-	return '\n    <!DOCTYPE html>\n    <html lang="en">\n    <head>\n    \t<!-- Required meta tags always come first -->\n    \t<meta charset="utf-8">\n    \t<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n    \t<meta http-equiv="x-ua-compatible" content="ie=edge">\n    \t<title>React Router Redux Express</title>\n\n    \t<!-- Bootstrap CSS -->\n    </head>\n    <body>\n\n    \t<div id="app"><div>' + html + '</div></div>\n        <script>\n            window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + '\n          </script>\n    \t<script src="../bin/app.bundle.js"></script>\n    \t<!-- jQuery first, then Bootstrap JS. -->\n    \t<script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script>\n        <script src="http://localhost:35729/livereload.js"></script>\n    </body>\n    </html>\n    ';
+  return '\n    <!DOCTYPE html>\n    <html lang="en">\n    <head>\n    \t<!-- Required meta tags always come first -->\n    \t<meta charset="utf-8">\n    \t<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n    \t<meta http-equiv="x-ua-compatible" content="ie=edge">\n    \t<title>React Router Redux Express</title>\n    </head>\n    <body>\n\n    \t<div id="app"><div>' + html + '</div></div>\n        <script>\n            window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + '\n          </script>\n    \t<script src="../bin/app.bundle.js"></script>\n    \t<!-- jQuery first, then Bootstrap JS. -->\n    \t<script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script>\n        <script src="http://localhost:35729/livereload.js"></script>\n    </body>\n    </html>\n    ';
 }
 
 exports.default = router;
@@ -540,7 +558,7 @@ var _signupReducers = __webpack_require__(12);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
-var _testeReducers = __webpack_require__(15);
+var _testeReducers = __webpack_require__(13);
 
 var _testeReducers2 = _interopRequireDefault(_testeReducers);
 
@@ -585,6 +603,29 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case 'TESTE':
+            return action;
+        default:
+            return state;
+    }
+};
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -617,33 +658,16 @@ exports.default = _react2.default.createElement(
 );
 
 /***/ }),
-/* 14 */
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = require("mongoose");
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-exports.default = function () {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var action = arguments[1];
-
-    switch (action.type) {
-        case 'TESTE':
-            return action;
-        default:
-            return state;
-    }
-};
 
 /***/ })
 /******/ ]);
