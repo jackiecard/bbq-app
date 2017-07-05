@@ -722,8 +722,9 @@ var api = _express2.default.Router();
 
 api.route('/users').get(function (req, res) {
     _userModel2.default.find(function (err, users) {
-        if (err) res.send(err);
-
+        if (err) {
+            return res.send(err);
+        }
         res.json(users);
     });
 }).post(function (req, res) {
@@ -732,9 +733,37 @@ api.route('/users').get(function (req, res) {
     user.password = req.body.password;
 
     user.save(function (err) {
-        if (err) res.send(err);
+        if (err) {
+            return res.send(err);
+        }
 
         res.json({ 'SUCCESS': user });
+    });
+});
+
+api.route('/user/:id').get(function (req, res) {
+    _userModel2.default.findById(req.params.id, function (err, user) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': user });
+    });
+}).put(function (req, res) {
+    _userModel2.default.findById(req.body.id, function (e, user) {
+        if (e) {
+            return res.send(e);
+        }
+        if (!user) {
+            return res.sendStatus(404);
+        }
+
+        user.update({ _id: req.params }, { email: req.body.email, password: req.body.password }, function (err) {
+            if (err) {
+                return res.sendStatus(500, err);
+            }
+            res.json({ 'UPDATED': user });
+        });
     });
 });
 
@@ -743,7 +772,7 @@ api.route('/users').get(function (req, res) {
 //
 //     res.json({message: 'ok'})
 //
-//     // var user =  new UserModel();
+//     // var user =  new UserModel()
 //     // user.email = req.body.email;
 //     // user.password = req.body.password;
 //     //
