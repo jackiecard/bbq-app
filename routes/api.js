@@ -3,6 +3,10 @@ import UserModel from '../models/userModel'
 
 let api = express.Router()
 
+/*
+ *             USER
+ *
+ */
 api.route('/users')
     .get((req, res) => {
         UserModel.find((err, users) => {
@@ -38,7 +42,7 @@ api.route('/user/:id')
         })
     })
     .put((req, res) => {
-        UserModel.findById(req.body._id, (e, user) => {
+        UserModel.findById(req.params.id, (e, user) => {
             if(e){
                 return res.send(e)
             }
@@ -57,34 +61,17 @@ api.route('/user/:id')
             })
         })
     })
+    .delete((req, res) => {
+        UserModel.findByIdAndRemove(req.params.id, function (err, user) {
+            res.send({ 'DELETED': user });
+        })
+    })
 
 
-// api.post('/user', (req, res) => {
-//
-//
-//     res.json({message: 'ok'})
-//
-//     // var user =  new UserModel()
-//     // user.email = req.body.email;
-//     // user.password = req.body.password;
-//     //
-//     // user.save((err) => {
-//     //     if(err)
-//     //         res.send(err);
-//     //
-//     //     res.json({message: 'ok'})
-//     // })
-// });
 
-// api.get('/users', (req, res) => {
-//
-//     // UserModel.find((err, users) => {
-//     //     if(err)
-//     //         res.send(err)
-//     //
-//     //     res.json(users)
-//     //
-//     // })
-//     res.json("ok")
-// });
+/*
+ *             COMPANY
+ *
+ */
+
 export default api;

@@ -178,6 +178,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var api = _express2.default.Router();
 
+/*
+ *             USER
+ *
+ */
 api.route('/users').get(function (req, res) {
     _userModel2.default.find(function (err, users) {
         if (err) {
@@ -208,7 +212,7 @@ api.route('/user/:id').get(function (req, res) {
         res.json({ 'SUCCESS': user });
     });
 }).put(function (req, res) {
-    _userModel2.default.findById(req.body._id, function (e, user) {
+    _userModel2.default.findById(req.params.id, function (e, user) {
         if (e) {
             return res.send(e);
         }
@@ -226,36 +230,17 @@ api.route('/user/:id').get(function (req, res) {
             res.json({ 'UPDATED': updatedUser });
         });
     });
+}).delete(function (req, res) {
+    _userModel2.default.findByIdAndRemove(req.params.id, function (err, user) {
+        res.send({ 'DELETED': user });
+    });
 });
 
-// api.post('/user', (req, res) => {
-//
-//
-//     res.json({message: 'ok'})
-//
-//     // var user =  new UserModel()
-//     // user.email = req.body.email;
-//     // user.password = req.body.password;
-//     //
-//     // user.save((err) => {
-//     //     if(err)
-//     //         res.send(err);
-//     //
-//     //     res.json({message: 'ok'})
-//     // })
-// });
+/*
+ *             COMPANY
+ *
+ */
 
-// api.get('/users', (req, res) => {
-//
-//     // UserModel.find((err, users) => {
-//     //     if(err)
-//     //         res.send(err)
-//     //
-//     //     res.json(users)
-//     //
-//     // })
-//     res.json("ok")
-// });
 exports.default = api;
 
 /***/ }),
