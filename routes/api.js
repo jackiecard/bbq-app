@@ -38,7 +38,7 @@ api.route('/user/:id')
         })
     })
     .put((req, res) => {
-        UserModel.findById(req.body.id, (e, user) => {
+        UserModel.findById(req.body._id, (e, user) => {
             if(e){
                 return res.send(e)
             }
@@ -46,11 +46,14 @@ api.route('/user/:id')
                 return res.sendStatus(404)
             }
 
-            user.update({_id : req.params }, { email: req.body.email, password: req.body.password }, err => {
+            user.email= req.body.email || user.email
+            user.password= req.body.password || user.password
+
+            user.save((err, updatedUser) => {
                 if(err){
                     return res.sendStatus(500, err)
                 }
-                res.json({ 'UPDATED': user })
+                res.json({ 'UPDATED': updatedUser })
             })
         })
     })

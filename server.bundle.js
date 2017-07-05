@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -86,6 +86,12 @@ module.exports = require("express");
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("mongoose");
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -119,19 +125,141 @@ var teste = exports.teste = function teste() {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-redux");
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = require("redux");
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var config = {};
+
+config.mongoURI = {
+  development: 'mongodb://localhost/node-testing',
+  test: 'mongodb://localhost/node-test'
+};
+
+exports.default = config;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _express = __webpack_require__(2);
+
+var _express2 = _interopRequireDefault(_express);
+
+var _userModel = __webpack_require__(11);
+
+var _userModel2 = _interopRequireDefault(_userModel);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var api = _express2.default.Router();
+
+api.route('/users').get(function (req, res) {
+    _userModel2.default.find(function (err, users) {
+        if (err) {
+            return res.send(err);
+        }
+        res.json(users);
+    });
+}).post(function (req, res) {
+    var user = new _userModel2.default();
+    user.email = req.body.email;
+    user.password = req.body.password;
+
+    user.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': user });
+    });
+});
+
+api.route('/user/:id').get(function (req, res) {
+    _userModel2.default.findById(req.params.id, function (err, user) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': user });
+    });
+}).put(function (req, res) {
+    _userModel2.default.findById(req.body._id, function (e, user) {
+        if (e) {
+            return res.send(e);
+        }
+        if (!user) {
+            return res.sendStatus(404);
+        }
+
+        user.email = req.body.email || user.email;
+        user.password = req.body.password || user.password;
+
+        user.save(function (err, updatedUser) {
+            if (err) {
+                return res.sendStatus(500, err);
+            }
+            res.json({ 'UPDATED': updatedUser });
+        });
+    });
+});
+
+// api.post('/user', (req, res) => {
+//
+//
+//     res.json({message: 'ok'})
+//
+//     // var user =  new UserModel()
+//     // user.email = req.body.email;
+//     // user.password = req.body.password;
+//     //
+//     // user.save((err) => {
+//     //     if(err)
+//     //         res.send(err);
+//     //
+//     //     res.json({message: 'ok'})
+//     // })
+// });
+
+// api.get('/users', (req, res) => {
+//
+//     // UserModel.find((err, users) => {
+//     //     if(err)
+//     //         res.send(err)
+//     //
+//     //     res.json(users)
+//     //
+//     // })
+//     res.json("ok")
+// });
+exports.default = api;
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -149,25 +277,25 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(16);
+var _server = __webpack_require__(20);
 
 var _server2 = _interopRequireDefault(_server);
 
 var _reactRouter = __webpack_require__(1);
 
-var _routes = __webpack_require__(14);
+var _routes = __webpack_require__(19);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _index = __webpack_require__(11);
+var _index = __webpack_require__(16);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _redux = __webpack_require__(5);
+var _redux = __webpack_require__(6);
 
-var _reactRedux = __webpack_require__(4);
+var _reactRedux = __webpack_require__(5);
 
-var _signupActions = __webpack_require__(3);
+var _signupActions = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -238,7 +366,41 @@ function renderFullPage(html, initialState) {
 exports.default = router;
 
 /***/ }),
-/* 7 */
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("body-parser");
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mongoose = __webpack_require__(3);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Schema = _mongoose2.default.Schema;
+
+var UserModelSchema = new Schema({
+    email: String,
+    password: String
+});
+
+var UserModel = _mongoose2.default.model('UserModel', UserModelSchema);
+
+exports.default = UserModel;
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -252,23 +414,23 @@ var _express = __webpack_require__(2);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _index = __webpack_require__(6);
+var _index = __webpack_require__(9);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _api = __webpack_require__(17);
+var _api = __webpack_require__(8);
 
 var _api2 = _interopRequireDefault(_api);
 
-var _mongoose = __webpack_require__(15);
+var _mongoose = __webpack_require__(3);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _bodyParser = __webpack_require__(19);
+var _bodyParser = __webpack_require__(10);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(20);
+var _config = __webpack_require__(7);
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -315,7 +477,7 @@ app.listen(3000, function () {
 exports.default = app;
 
 /***/ }),
-/* 8 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -349,7 +511,7 @@ var App = function App(props) {
 exports.default = App;
 
 /***/ }),
-/* 9 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -431,7 +593,7 @@ var LoginPage = function (_React$Component) {
 exports.default = LoginPage;
 
 /***/ }),
-/* 10 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -447,9 +609,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(4);
+var _reactRedux = __webpack_require__(5);
 
-var _signupActions = __webpack_require__(3);
+var _signupActions = __webpack_require__(4);
 
 var signupActions = _interopRequireWildcard(_signupActions);
 
@@ -570,7 +732,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(SignupPage);
 
 /***/ }),
-/* 11 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -580,13 +742,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _redux = __webpack_require__(5);
+var _redux = __webpack_require__(6);
 
-var _signupReducers = __webpack_require__(12);
+var _signupReducers = __webpack_require__(17);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
-var _testeReducers = __webpack_require__(13);
+var _testeReducers = __webpack_require__(18);
 
 var _testeReducers2 = _interopRequireDefault(_testeReducers);
 
@@ -598,7 +760,7 @@ exports.default = (0, _redux.combineReducers)({
 });
 
 /***/ }),
-/* 12 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -621,7 +783,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 13 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -644,7 +806,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 14 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -660,15 +822,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(1);
 
-var _App = __webpack_require__(8);
+var _App = __webpack_require__(13);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _LoginPage = __webpack_require__(9);
+var _LoginPage = __webpack_require__(14);
 
 var _LoginPage2 = _interopRequireDefault(_LoginPage);
 
-var _SignupPage = __webpack_require__(10);
+var _SignupPage = __webpack_require__(15);
 
 var _SignupPage2 = _interopRequireDefault(_SignupPage);
 
@@ -686,169 +848,10 @@ exports.default = _react2.default.createElement(
 );
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _express = __webpack_require__(2);
-
-var _express2 = _interopRequireDefault(_express);
-
-var _userModel = __webpack_require__(18);
-
-var _userModel2 = _interopRequireDefault(_userModel);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var api = _express2.default.Router();
-
-api.route('/users').get(function (req, res) {
-    _userModel2.default.find(function (err, users) {
-        if (err) {
-            return res.send(err);
-        }
-        res.json(users);
-    });
-}).post(function (req, res) {
-    var user = new _userModel2.default();
-    user.email = req.body.email;
-    user.password = req.body.password;
-
-    user.save(function (err) {
-        if (err) {
-            return res.send(err);
-        }
-
-        res.json({ 'SUCCESS': user });
-    });
-});
-
-api.route('/user/:id').get(function (req, res) {
-    _userModel2.default.findById(req.params.id, function (err, user) {
-        if (err) {
-            return res.send(err);
-        }
-
-        res.json({ 'SUCCESS': user });
-    });
-}).put(function (req, res) {
-    _userModel2.default.findById(req.body.id, function (e, user) {
-        if (e) {
-            return res.send(e);
-        }
-        if (!user) {
-            return res.sendStatus(404);
-        }
-
-        user.update({ _id: req.params }, { email: req.body.email, password: req.body.password }, function (err) {
-            if (err) {
-                return res.sendStatus(500, err);
-            }
-            res.json({ 'UPDATED': user });
-        });
-    });
-});
-
-// api.post('/user', (req, res) => {
-//
-//
-//     res.json({message: 'ok'})
-//
-//     // var user =  new UserModel()
-//     // user.email = req.body.email;
-//     // user.password = req.body.password;
-//     //
-//     // user.save((err) => {
-//     //     if(err)
-//     //         res.send(err);
-//     //
-//     //     res.json({message: 'ok'})
-//     // })
-// });
-
-// api.get('/users', (req, res) => {
-//
-//     // UserModel.find((err, users) => {
-//     //     if(err)
-//     //         res.send(err)
-//     //
-//     //     res.json(users)
-//     //
-//     // })
-//     res.json("ok")
-// });
-exports.default = api;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mongoose = __webpack_require__(15);
-
-var _mongoose2 = _interopRequireDefault(_mongoose);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Schema = _mongoose2.default.Schema;
-
-var UserModelSchema = new Schema({
-    email: String,
-    password: String
-});
-
-var UserModel = _mongoose2.default.model('UserModel', UserModelSchema);
-
-exports.default = UserModel;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = require("body-parser");
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var config = {};
-
-config.mongoURI = {
-  development: 'mongodb://localhost/node-testing',
-  test: 'mongodb://localhost/node-test'
-};
-
-exports.default = config;
 
 /***/ })
 /******/ ]);

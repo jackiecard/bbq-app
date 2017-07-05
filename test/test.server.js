@@ -11,7 +11,7 @@ chai.use(chaiHttp)
 
 describe('Users', function() {
 
-    //UserModel.collection.drop()
+    // UserModel.collection.drop()
 
     beforeEach(function(done){
         var newUser = new UserModel({
@@ -23,7 +23,7 @@ describe('Users', function() {
         })
     })
     afterEach(function(done){
-        //UserModel.collection.drop()
+        // UserModel.collection.drop()
         done()
     })
 
@@ -32,7 +32,6 @@ describe('Users', function() {
             chai.request(server)
               .get('/api/users')
               .end((err, res) => {
-                  console.log(res.body)
                   res.should.have.status(200)
                   res.should.be.json
                   res.body.should.be.a('array')
@@ -40,19 +39,22 @@ describe('Users', function() {
               })
         })
     it('should list a SINGLE user on /user/<id> GET', done => {
-          var id = '595bff1b77244710ee41c3ce'
-          chai.request(server)
-            .get('/api/user/' + id)
-            .end((err, res) => {
-                res.should.have.status(200)
-                res.should.be.json
-                res.body.SUCCESS.should.be.a('object')
-                res.body.SUCCESS.should.have.property('_id')
-                res.body.SUCCESS._id.should.equal('595bff1b77244710ee41c3ce')
-                done()
+        chai.request(server)
+            .get('/api/users')
+            .end(function(err, response){
+              let aUser = response.body[0]
+              chai.request(server)
+                .get('/api/user/' + aUser._id)
+                .end((err, res) => {
+                    res.should.have.status(200)
+                    res.should.be.json
+                    res.body.SUCCESS.should.be.a('object')
+                    res.body.SUCCESS.should.have.property('_id')
+                    res.body.SUCCESS._id.should.equal(aUser._id)
+                    done()
             })
-        }
-    )
+        })
+    })
     it('should add a SINGLE user on /users POST', done => {
             chai.request(server)
               .post('/api/users')
@@ -71,25 +73,46 @@ describe('Users', function() {
               })
         })
     it('should update a SINGLE user on /user/<id> PUT', done => {
-          var id = '595c39b0a24cbb1ae9524c9b'
-          chai.request(server)
-            .put('/api/user/' + id)
-            .send({'email': 'super@g.com', password: '123'})
-            .end(function(err, res){
-                console.log(res.body)
-              res.should.have.status(200)
-              res.should.be.json
-              res.body.should.be.a('object')
-              res.body.should.have.property('UPDATED')
-              res.body.UPDATED.should.be.a('object')
-              res.body.UPDATED.should.have.property('email')
-              res.body.UPDATED.email.should.equal('super@g.com')
-              res.body.UPDATED.should.have.property('password')
-              res.body.UPDATED.password.should.equal('123')
-              done()
+        chai.request(server)
+            .get('/api/users')
+            .end(function(err, response){
+              let aUser = response.body[0]
+              aUser.email = 'superemail' + Math.random() + '@g.com'
+
+              chai.request(server)
+                .put('/api/user/' + aUser._id)
+                .send(aUser)
+                .end(function(e, res){
+                  res.should.have.status(200)
+                  res.should.be.json
+                  res.body.should.be.a('object')
+                  res.body.should.have.property('UPDATED')
+                  res.body.UPDATED.should.be.a('object')
+                  res.body.UPDATED.should.have.property('email')
+                  res.body.UPDATED.email.should.equal(aUser.email)
+                  done()
+              })
           })
-    }
-    )
+      })
+
+
+        //   chai.request(server)
+        //     .put('/api/user/' + id)
+        //     .send({'email': 'super@g.com', password: '123'})
+        //     .end(function(err, res){
+        //         console.log(res.body)
+        //       res.should.have.status(200)
+        //       res.should.be.json
+        //       res.body.should.be.a('object')
+        //       res.body.should.have.property('UPDATED')
+        //       res.body.UPDATED.should.be.a('object')
+        //       res.body.UPDATED.should.have.property('email')
+        //       res.body.UPDATED.email.should.equal('super@g.com')
+        //       res.body.UPDATED.should.have.property('password')
+        //       res.body.UPDATED.password.should.equal('123')
+        //       done()
+        //   })
+        // }
     it('should delete a SINGLE user on /blob/<id> DELETE')
   })
 
