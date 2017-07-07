@@ -310,33 +310,55 @@ describe('Item Purchase', function() {
                 res.body[0].should.be.a('object')
                 res.body[0].should.have.property('userId')
 
-                // check if user exists
-                chai.request(server)
-                  .get('/api/user/' + res.body[0].userId)
-                  .end((e, r) => {
-                      r.body.should.have.status(200)
-                      r.should.be.json
-                      r.body.SUCCESS.should.be.a('object')
-                      r.body.SUCCESS.should.have.property('_id')
-                      r.body.SUCCESS._id.should.equal(res.body[0].userId)
-                  })
+                // // check if user exists
+                // chai.request(server)
+                //   .get('/api/user/' + res.body[0].userId)
+                //   .end((e, r) => {
+                //       r.body.should.have.status(200)
+                //       r.should.be.json
+                //       r.body.SUCCESS.should.be.a('object')
+                //       r.body.SUCCESS.should.have.property('_id')
+                //       r.body.SUCCESS._id.should.equal(res.body[0].userId)
+                //   })
 
                 res.body[0].should.have.property('items')
 
                 // check if a item exists
-                chai.request(server)
-                  .get('/api/item/' + res.body[0].items[0])
-                  .end((e, r) => {
-                      r.body.should.have.status(200)
-                      r.should.be.json
-                      r.body.SUCCESS.should.be.a('object')
-                      r.body.SUCCESS.should.have.property('_id')
-                      r.body.SUCCESS._id.should.equal(res.body[0].items[0])
-                  })
-
+                // chai.request(server)
+                //   .get('/api/item/' + res.body[0].items[0])
+                //   .end((e, r) => {
+                //       r.body.should.have.status(200)
+                //       r.should.be.json
+                //       r.body.SUCCESS.should.be.a('object')
+                //       r.body.SUCCESS.should.have.property('_id')
+                //       r.body.SUCCESS._id.should.equal(res.body[0].items[0])
+                //   })
                 done()
             })
+
          })
+
+
+
+         it('should add a SINGLE purchase on /purchases POST', done => {
+             chai.request(server)
+               .get('/api/purchases')
+               .end((error, response) => {
+                   var aPurchase = response.body[0];
+
+                   chai.request(server)
+                       .post('/api/purchases/')
+                       .send(aPurchase)
+                       .end((err, res) => {
+                           console.log(res.body)
+                         res.body.should.have.status(200)
+                         res.should.be.json
+                       })
+
+                   done()
+               })
+         })
+
 
        })
     })

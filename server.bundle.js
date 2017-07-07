@@ -387,6 +387,18 @@ api.route('/purchases').get(function (req, res) {
         }
         res.json(purchase);
     });
+}).post(function (req, res) {
+    var purchase = new _purchaseModel2.default();
+    purchase.items = req.body.items;
+    purchase.userId = req.body.userId;
+
+    purchase.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': purchase });
+    });
 });
 
 exports.default = api;

@@ -162,5 +162,18 @@ api.route('/item/:id')
               res.json(purchase)
           })
       })
+      .post((req, res) => {
+          var purchase =  new PurchaseModel()
+          purchase.items = req.body.items
+          purchase.userId = req.body.userId
+
+          purchase.save((err) => {
+              if(err){
+                  return res.send(err)
+              }
+
+              res.json({ 'SUCCESS': purchase })
+          })
+      })
 
 export default api;
