@@ -176,4 +176,15 @@ api.route('/item/:id')
           })
       })
 
+  api.route('/purchase/:id')
+   .get((req, res) => {
+       PurchaseModel.findById(req.params.id, (err, purchase) => {
+           if(err){
+               return res.send(err)
+           }
+
+           res.json({ 'SUCCESS': purchase })
+       })
+   })
+
 export default api;

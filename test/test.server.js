@@ -350,14 +350,33 @@ describe('Item Purchase', function() {
                        .post('/api/purchases/')
                        .send(aPurchase)
                        .end((err, res) => {
-                           console.log(res.body)
-                         res.body.should.have.status(200)
+                         res.should.have.status(200)
                          res.should.be.json
-                       })
 
-                   done()
+                         done()
+                    })
                })
-         })
+           })
+
+
+
+         it('should list a SINGLE Purchase on /purchase/<id> GET', done => {
+             chai.request(server)
+                 .get('/api/purchases')
+                 .end(function(error, response){
+                   let aPurchase = response.body[0]
+                   chai.request(server)
+                     .get('/api/purchase/' + aPurchase._id)
+                     .end((err, res) => {
+                         res.should.have.status(200)
+                         res.should.be.json
+                         res.body.SUCCESS.should.be.a('object')
+                         res.body.SUCCESS.should.have.property('_id')
+                         res.body.SUCCESS._id.should.equal(aPurchase._id)
+                         done()
+                     })
+                 })
+          })
 
 
        })

@@ -401,6 +401,16 @@ api.route('/purchases').get(function (req, res) {
     });
 });
 
+api.route('/purchase/:id').get(function (req, res) {
+    _purchaseModel2.default.findById(req.params.id, function (err, purchase) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': purchase });
+    });
+});
+
 exports.default = api;
 
 /***/ }),
