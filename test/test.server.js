@@ -276,11 +276,11 @@ describe('Item Purchase', function() {
           })
           var items = [];
           var item1 = new ItemPurchaseModel({
-              nome: 'Chocolate',
+              name: 'Chocolate',
               quantity: '10'
           })
           var item2 = new ItemPurchaseModel({
-              nome: 'Pão',
+              name: 'Pão',
               quantity: '225'
           })
           items.push(item1)
@@ -323,17 +323,17 @@ describe('Item Purchase', function() {
 
                 res.body[0].should.have.property('items')
 
-                // TODO: check if a item exists
-                // chai.request(server)
-                //   .get('/api/item/' + res.body[0].items[0])
-                //   .end((e, r) => {
-                //       console.log('------------', r.body, res.body[0].items[0])
-                //       r.body.should.have.status(200)
-                //       r.should.be.json
-                //       r.body.SUCCESS.should.be.a('object')
-                //       r.body.SUCCESS.should.have.property('_id')
-                //       r.body.SUCCESS._id.should.equal(res.body[0].items[0])
-                //   })
+                // check if a item exists
+                chai.request(server)
+                  .get('/api/item/' + res.body[0].items[0])
+                  .end((e, r) => {
+                      r.body.should.have.status(200)
+                      r.should.be.json
+                      r.body.SUCCESS.should.be.a('object')
+                      r.body.SUCCESS.should.have.property('_id')
+                      r.body.SUCCESS._id.should.equal(res.body[0].items[0])
+                  })
+
                 done()
             })
          })
