@@ -31,10 +31,8 @@ mongoose.connect(config.mongoURI[app.settings.env], (err, res) => {
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
-
 app.use('/bin', express.static('./bin'));
 app.use('/stylesheets', express.static('./public/stylesheets'));
-
 
 app.use('/', router);
 app.use('/view/*', router);

@@ -1,5 +1,8 @@
 import express from 'express'
 import UserModel from '../models/userModel'
+import CompanyModel from '../models/companyModel'
+import ItemPurchaseModel from '../models/itemPurchaseModel'
+import PurchaseModel from '../models/purchaseModel'
 
 let api = express.Router()
 
@@ -73,5 +76,91 @@ api.route('/user/:id')
  *             COMPANY
  *
  */
+ api.route('/companies')
+     .get((req, res) => {
+         CompanyModel.find((err, companies) => {
+             if(err){
+                 return res.send(err)
+             }
+             res.json(companies)
+         })
+     })
+     .post((req, res) => {
+         var company =  new CompanyModel()
+         company.cnpj = req.body.cnpj
+         company.name = req.body.name
+
+         company.save((err) => {
+             if(err){
+                 return res.send(err)
+             }
+
+             res.json({ 'SUCCESS': company })
+         })
+     })
+
+api.route('/company/:cnpj')
+    .get((req, res) => {
+        CompanyModel.findOne({ cnpj: req.params.cnpj }, (err, company) => {
+            if(err){
+                return res.send(err)
+            }
+
+            res.json({ 'SUCCESS': company })
+        })
+    })
+
+/*
+ *             ITEM PURCHASE
+ *
+ */
+ api.route('/items')
+     .get((req, res) => {
+        //  console.log('-------- req body api --------', req.body)
+         ItemPurchaseModel.find((err, items) => {
+             if(err){
+                 return res.send(err)
+             }
+             res.json(items)
+         })
+     })
+     .post((req, res) => {
+         var item =  new ItemPurchaseModel()
+         item.quantity = req.body.quantity
+         item.name = req.body.name
+
+         item.save((err) => {
+             if(err){
+                 return res.send(err)
+             }
+
+             res.json({ 'SUCCESS': item })
+         })
+     })
+
+api.route('/item/:id')
+ .get((req, res) => {
+     ItemPurchaseModel.findById(req.params.id, (err, item) => {
+         if(err){
+             return res.send(err)
+         }
+
+         res.json({ 'SUCCESS': item })
+     })
+ })
+
+ /*
+  *             PURCHASE
+  *
+  */
+  api.route('/purchases')
+      .get((req, res) => {
+          PurchaseModel.find((err, purchase) => {
+              if(err){
+                  return res.send(err)
+              }
+              res.json(purchase)
+          })
+      })
 
 export default api;

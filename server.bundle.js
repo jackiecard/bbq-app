@@ -63,35 +63,92 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = require("react");
+module.exports = require("mongoose");
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-router");
+module.exports = require("react");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("react-router");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("mongoose");
+module.exports = require("express");
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mongoose = __webpack_require__(0);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Schema = _mongoose2.default.Schema;
+
+var itemPurchaseModelSchema = new Schema({
+    name: { type: String, required: true },
+    quantity: { type: String, required: true }
+    // list of purchases
+});
+
+var itemPurchaseModel = _mongoose2.default.model('itemPurchaseModel', itemPurchaseModelSchema);
+
+exports.default = itemPurchaseModel;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mongoose = __webpack_require__(0);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Schema = _mongoose2.default.Schema;
+
+var UserModelSchema = new Schema({
+    email: { type: String, required: true },
+    password: { type: String, required: true }
+});
+
+var UserModel = _mongoose2.default.model('UserModel', UserModelSchema);
+
+exports.default = UserModel;
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -125,19 +182,19 @@ var teste = exports.teste = function teste() {
 };
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-redux");
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = require("redux");
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -156,7 +213,7 @@ config.mongoURI = {
 exports.default = config;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -166,13 +223,25 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _express = __webpack_require__(2);
+var _express = __webpack_require__(3);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _userModel = __webpack_require__(11);
+var _userModel = __webpack_require__(5);
 
 var _userModel2 = _interopRequireDefault(_userModel);
+
+var _companyModel = __webpack_require__(13);
+
+var _companyModel2 = _interopRequireDefault(_companyModel);
+
+var _itemPurchaseModel = __webpack_require__(4);
+
+var _itemPurchaseModel2 = _interopRequireDefault(_itemPurchaseModel);
+
+var _purchaseModel = __webpack_require__(14);
+
+var _purchaseModel2 = _interopRequireDefault(_purchaseModel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -240,11 +309,90 @@ api.route('/user/:id').get(function (req, res) {
  *             COMPANY
  *
  */
+api.route('/companies').get(function (req, res) {
+    _companyModel2.default.find(function (err, companies) {
+        if (err) {
+            return res.send(err);
+        }
+        res.json(companies);
+    });
+}).post(function (req, res) {
+    var company = new _companyModel2.default();
+    company.cnpj = req.body.cnpj;
+    company.name = req.body.name;
+
+    company.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': company });
+    });
+});
+
+api.route('/company/:cnpj').get(function (req, res) {
+    _companyModel2.default.findOne({ cnpj: req.params.cnpj }, function (err, company) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': company });
+    });
+});
+
+/*
+ *             ITEM PURCHASE
+ *
+ */
+api.route('/items').get(function (req, res) {
+    //  console.log('-------- req body api --------', req.body)
+    _itemPurchaseModel2.default.find(function (err, items) {
+        if (err) {
+            return res.send(err);
+        }
+        res.json(items);
+    });
+}).post(function (req, res) {
+    var item = new _itemPurchaseModel2.default();
+    item.quantity = req.body.quantity;
+    item.name = req.body.name;
+
+    item.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': item });
+    });
+});
+
+api.route('/item/:id').get(function (req, res) {
+    _itemPurchaseModel2.default.findById(req.params.id, function (err, item) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': item });
+    });
+});
+
+/*
+ *             PURCHASE
+ *
+ */
+api.route('/purchases').get(function (req, res) {
+    _purchaseModel2.default.find(function (err, purchase) {
+        if (err) {
+            return res.send(err);
+        }
+        res.json(purchase);
+    });
+});
 
 exports.default = api;
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -254,33 +402,33 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _express = __webpack_require__(2);
+var _express = __webpack_require__(3);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(20);
+var _server = __webpack_require__(23);
 
 var _server2 = _interopRequireDefault(_server);
 
-var _reactRouter = __webpack_require__(1);
+var _reactRouter = __webpack_require__(2);
 
-var _routes = __webpack_require__(19);
+var _routes = __webpack_require__(22);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _index = __webpack_require__(16);
+var _index = __webpack_require__(19);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _redux = __webpack_require__(6);
+var _redux = __webpack_require__(8);
 
-var _reactRedux = __webpack_require__(5);
+var _reactRedux = __webpack_require__(7);
 
-var _signupActions = __webpack_require__(4);
+var _signupActions = __webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -351,13 +499,13 @@ function renderFullPage(html, initialState) {
 exports.default = router;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -367,7 +515,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mongoose = __webpack_require__(3);
+var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -375,17 +523,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Schema = _mongoose2.default.Schema;
 
-var UserModelSchema = new Schema({
-    email: String,
-    password: String
+var companyModelSchema = new Schema({
+    cnpj: { type: String, unique: true, required: true },
+    name: { type: String, required: true }
+    // list of purchases
 });
 
-var UserModel = _mongoose2.default.model('UserModel', UserModelSchema);
+var companyModel = _mongoose2.default.model('companyModel', companyModelSchema);
 
-exports.default = UserModel;
+exports.default = companyModel;
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -395,27 +544,63 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _express = __webpack_require__(2);
-
-var _express2 = _interopRequireDefault(_express);
-
-var _index = __webpack_require__(9);
-
-var _index2 = _interopRequireDefault(_index);
-
-var _api = __webpack_require__(8);
-
-var _api2 = _interopRequireDefault(_api);
-
-var _mongoose = __webpack_require__(3);
+var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _bodyParser = __webpack_require__(10);
+var _itemPurchaseModel = __webpack_require__(4);
+
+var _itemPurchaseModel2 = _interopRequireDefault(_itemPurchaseModel);
+
+var _userModel = __webpack_require__(5);
+
+var _userModel2 = _interopRequireDefault(_userModel);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Schema = _mongoose2.default.Schema;
+
+var purchaseModelSchema = new Schema({
+    items: [{ type: Schema.Types.ObjectId, ref: _itemPurchaseModel2.default }],
+    userId: { type: String, ref: _userModel2.default }
+});
+
+var purchaseModel = _mongoose2.default.model('purchaseModel', purchaseModelSchema);
+
+exports.default = purchaseModel;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _express = __webpack_require__(3);
+
+var _express2 = _interopRequireDefault(_express);
+
+var _index = __webpack_require__(11);
+
+var _index2 = _interopRequireDefault(_index);
+
+var _api = __webpack_require__(10);
+
+var _api2 = _interopRequireDefault(_api);
+
+var _mongoose = __webpack_require__(0);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _bodyParser = __webpack_require__(12);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(7);
+var _config = __webpack_require__(9);
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -462,7 +647,7 @@ app.listen(3000, function () {
 exports.default = app;
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -472,11 +657,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(1);
+var _reactRouter = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -496,7 +681,7 @@ var App = function App(props) {
 exports.default = App;
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -508,11 +693,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(1);
+var _reactRouter = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -578,7 +763,7 @@ var LoginPage = function (_React$Component) {
 exports.default = LoginPage;
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -590,13 +775,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(5);
+var _reactRedux = __webpack_require__(7);
 
-var _signupActions = __webpack_require__(4);
+var _signupActions = __webpack_require__(6);
 
 var signupActions = _interopRequireWildcard(_signupActions);
 
@@ -717,7 +902,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(SignupPage);
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -727,13 +912,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _redux = __webpack_require__(6);
+var _redux = __webpack_require__(8);
 
-var _signupReducers = __webpack_require__(17);
+var _signupReducers = __webpack_require__(20);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
-var _testeReducers = __webpack_require__(18);
+var _testeReducers = __webpack_require__(21);
 
 var _testeReducers2 = _interopRequireDefault(_testeReducers);
 
@@ -745,7 +930,7 @@ exports.default = (0, _redux.combineReducers)({
 });
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -768,7 +953,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -791,7 +976,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -801,21 +986,21 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(1);
+var _reactRouter = __webpack_require__(2);
 
-var _App = __webpack_require__(13);
+var _App = __webpack_require__(16);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _LoginPage = __webpack_require__(14);
+var _LoginPage = __webpack_require__(17);
 
 var _LoginPage2 = _interopRequireDefault(_LoginPage);
 
-var _SignupPage = __webpack_require__(15);
+var _SignupPage = __webpack_require__(18);
 
 var _SignupPage2 = _interopRequireDefault(_SignupPage);
 
@@ -833,7 +1018,7 @@ exports.default = _react2.default.createElement(
 );
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
