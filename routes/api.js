@@ -36,12 +36,10 @@ api.route('/users')
 
 api.route('/user/:id')
     .get((req, res) => {
-        console.log('---- req params', req.params)
         UserModel.findById(req.params.id, (err, user) => {
             if(err){
                 return res.send(err)
             }
-            console.log('---- user', user)
 
             res.json({ 'SUCCESS': user })
         })
@@ -118,7 +116,6 @@ api.route('/company/:cnpj')
  */
  api.route('/items')
      .get((req, res) => {
-        //  console.log('-------- req body api --------', req.body)
          ItemPurchaseModel.find((err, items) => {
              if(err){
                  return res.send(err)
@@ -146,7 +143,6 @@ api.route('/item/:id')
          if(err){
              return res.send(err)
          }
-         console.log('---- item', item)
 
          res.json({ 'SUCCESS': item })
      })
@@ -180,14 +176,20 @@ api.route('/item/:id')
       })
 
   api.route('/purchase/:id')
-   .get((req, res) => {
-       PurchaseModel.findById(req.params.id, (err, purchase) => {
-           if(err){
-               return res.send(err)
-           }
+       .get((req, res) => {
+           PurchaseModel.findById(req.params.id, (err, purchase) => {
+               if(err){
+                   return res.send(err)
+               }
 
-           res.json({ 'SUCCESS': purchase })
+               res.json({ 'SUCCESS': purchase })
+           })
        })
-   })
+
+       .delete((req, res) => {
+           PurchaseModel.findByIdAndRemove(req.params.id, function (err, purchase) {
+               res.send({ 'DELETED': purchase });
+           })
+       })
 
 export default api;

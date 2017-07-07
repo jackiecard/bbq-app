@@ -112,7 +112,6 @@ var Schema = _mongoose2.default.Schema;
 var itemPurchaseModelSchema = new Schema({
     name: { type: String, required: true },
     quantity: { type: String, required: true }
-    // list of purchases
 });
 
 var itemPurchaseModel = _mongoose2.default.model('itemPurchaseModel', itemPurchaseModelSchema);
@@ -273,12 +272,10 @@ api.route('/users').get(function (req, res) {
 });
 
 api.route('/user/:id').get(function (req, res) {
-    console.log('---- req params', req.params);
     _userModel2.default.findById(req.params.id, function (err, user) {
         if (err) {
             return res.send(err);
         }
-        console.log('---- user', user);
 
         res.json({ 'SUCCESS': user });
     });
@@ -347,7 +344,6 @@ api.route('/company/:cnpj').get(function (req, res) {
  *
  */
 api.route('/items').get(function (req, res) {
-    //  console.log('-------- req body api --------', req.body)
     _itemPurchaseModel2.default.find(function (err, items) {
         if (err) {
             return res.send(err);
@@ -373,7 +369,6 @@ api.route('/item/:id').get(function (req, res) {
         if (err) {
             return res.send(err);
         }
-        console.log('---- item', item);
 
         res.json({ 'SUCCESS': item });
     });
@@ -411,6 +406,10 @@ api.route('/purchase/:id').get(function (req, res) {
         }
 
         res.json({ 'SUCCESS': purchase });
+    });
+}).delete(function (req, res) {
+    _purchaseModel2.default.findByIdAndRemove(req.params.id, function (err, purchase) {
+        res.send({ 'DELETED': purchase });
     });
 });
 
@@ -544,14 +543,18 @@ var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
+var _purchaseModel = __webpack_require__(14);
+
+var _purchaseModel2 = _interopRequireDefault(_purchaseModel);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Schema = _mongoose2.default.Schema;
 
 var companyModelSchema = new Schema({
     cnpj: { type: String, unique: true, required: true },
-    name: { type: String, required: true }
-    // list of purchases
+    name: { type: String, required: true },
+    purchases: [{ type: Schema.Types.ObjectId, ref: _purchaseModel2.default }]
 });
 
 var companyModel = _mongoose2.default.model('companyModel', companyModelSchema);

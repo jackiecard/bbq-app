@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+import PurchaseModel from './purchaseModel'
 
-let Schema = mongoose.Schema;
+let Schema = mongoose.Schema
 
 let companyModelSchema = new Schema({
     cnpj: { type: String, unique: true, required: true },
     name:  { type: String, required: true },
-    // list of purchases
-});
+    purchases: [{ type: Schema.Types.ObjectId, ref: PurchaseModel }],
+})
 
-let companyModel = mongoose.model('companyModel', companyModelSchema);
+let companyModel = mongoose.model('companyModel', companyModelSchema)
 
-export default companyModel;
+export default companyModel
