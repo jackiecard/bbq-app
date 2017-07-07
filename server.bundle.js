@@ -273,10 +273,12 @@ api.route('/users').get(function (req, res) {
 });
 
 api.route('/user/:id').get(function (req, res) {
+    console.log('---- req params', req.params);
     _userModel2.default.findById(req.params.id, function (err, user) {
         if (err) {
             return res.send(err);
         }
+        console.log('---- user', user);
 
         res.json({ 'SUCCESS': user });
     });
@@ -371,6 +373,7 @@ api.route('/item/:id').get(function (req, res) {
         if (err) {
             return res.send(err);
         }
+        console.log('---- item', item);
 
         res.json({ 'SUCCESS': item });
     });

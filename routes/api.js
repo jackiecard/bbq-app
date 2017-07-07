@@ -36,10 +36,12 @@ api.route('/users')
 
 api.route('/user/:id')
     .get((req, res) => {
+        console.log('---- req params', req.params)
         UserModel.findById(req.params.id, (err, user) => {
             if(err){
                 return res.send(err)
             }
+            console.log('---- user', user)
 
             res.json({ 'SUCCESS': user })
         })
@@ -144,6 +146,7 @@ api.route('/item/:id')
          if(err){
              return res.send(err)
          }
+         console.log('---- item', item)
 
          res.json({ 'SUCCESS': item })
      })

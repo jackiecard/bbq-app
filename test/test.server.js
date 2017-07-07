@@ -274,15 +274,28 @@ describe('Item Purchase', function() {
               email: 'purchase@g.com',
               password: 'pass123'
           })
-          var items = [];
+          newUser.save(function(err) {
+              if (err) return handleError(err);
+          })
+
           var item1 = new ItemPurchaseModel({
               name: 'Chocolate',
               quantity: '10'
           })
+          item1.save(function(err) {
+              if (err) return handleError(err);
+          })
+
           var item2 = new ItemPurchaseModel({
               name: 'Pão',
               quantity: '225'
           })
+          item2.save(function(err) {
+              if (err) return handleError(err);
+          })
+
+          var items = []
+
           items.push(item1)
           items.push(item2)
 
@@ -290,7 +303,9 @@ describe('Item Purchase', function() {
               userId: newUser._id,
               items: items
           })
+          console.log(newPurchase)
           newPurchase.save(function(err) {
+              if (err) return handleError(err);
               done()
           })
       })
@@ -303,36 +318,38 @@ describe('Item Purchase', function() {
         it('should list ALL Purchase on /purchases GET', done => {
           chai.request(server)
             .get('/api/purchases')
-            .end((err, res) => {
-                res.should.have.status(200)
-                res.should.be.json
-                res.body.should.be.a('array')
-                res.body[0].should.be.a('object')
-                res.body[0].should.have.property('userId')
+            .end((error, response) => {
+                response.should.have.status(200)
+                response.should.be.json
+                response.body.should.be.a('array')
+                response.body[0].should.be.a('object')
+                response.body[0].should.have.property('userId')
 
-                // // check if user exists
-                // chai.request(server)
-                //   .get('/api/user/' + res.body[0].userId)
-                //   .end((e, r) => {
-                //       r.body.should.have.status(200)
-                //       r.should.be.json
-                //       r.body.SUCCESS.should.be.a('object')
-                //       r.body.SUCCESS.should.have.property('_id')
-                //       r.body.SUCCESS._id.should.equal(res.body[0].userId)
-                //   })
+                // check if user exists
+                chai.request(server)
+                  .get('/api/user/' + response.body[0].userId)
+                  .end((err, res) => {
+                      res.should.have.status(200)
+                      res.should.be.json
+                      res.body.should.have.property('SUCCESS')
+                      res.body.SUCCESS.should.be.a('object')
+                      res.body.SUCCESS.should.have.property('_id')
+                      res.body.SUCCESS._id.should.equal(res.body[0].userId)
+                  })
 
-                res.body[0].should.have.property('items')
+                response.body[0].should.have.property('items')
 
-                // check if a item exists
-                // chai.request(server)
-                //   .get('/api/item/' + res.body[0].items[0])
-                //   .end((e, r) => {
-                //       r.body.should.have.status(200)
-                //       r.should.be.json
-                //       r.body.SUCCESS.should.be.a('object')
-                //       r.body.SUCCESS.should.have.property('_id')
-                //       r.body.SUCCESS._id.should.equal(res.body[0].items[0])
-                //   })
+                //check if a item exists
+                chai.request(server)
+                  .get('/api/item/' + response.body[0].items[0])
+                  .end((err, res) => {
+                      res.should.have.status(200)
+                      res.should.be.json
+                      res.body.should.have.property('SUCCESS')
+                      res.body.SUCCESS.should.be.a('object')
+                      res.body.SUCCESS.should.have.property('_id')
+                      res.body.SUCCESS._id.should.equal(res.body[0].items[0])
+                  })
                 done()
             })
 
