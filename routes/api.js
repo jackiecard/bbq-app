@@ -13,7 +13,6 @@ let api = express.Router()
  */
 api.route('/login')
     .post((req, res) => {
-        console.log('-----------------------', req.body.email)
         UserModel.findOne({ email: req.body.email }, function (err, user) {
             if (!user){
                 res.statusCode = 401

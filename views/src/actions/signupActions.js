@@ -13,12 +13,10 @@ export const signupUser = (data) => {
     return (dispatch) => {
         return Axios.post('/api/signup', data)
             .then(response => {
-                console.log(response.data)
                 dispatch(signupUserSuccess(response.data))
                 browserHistory.push('/')
             })
             .catch(error =>{
-                console.log(error.response.data)
                 dispatch(errorActions.sendSignupErrors(error.response.data))
                 throw(error)
             });

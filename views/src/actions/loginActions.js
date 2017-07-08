@@ -13,12 +13,10 @@ export const login = (data) => {
     return (dispatch) => {
         return Axios.post('/api/login', data)
             .then(response => {
-                console.log(response.data)
                 dispatch(loginSuccess(response.data))
-                // browserHistory.push('/')
+                browserHistory.push('/dashboard')
             })
             .catch(error =>{
-                console.log(error.response.data)
                 dispatch(errorActions.sendLoginErrors(error.response.data))
                 throw(error)
             });
