@@ -119,6 +119,18 @@ describe('Users', function() {
           })
       })
 
+
+    it('should add User if password matches', done => {
+        chai.request(server)
+          .post('/api/signup')
+          .send({email: 'jackie@gmail.com', password: '123456', confirm: '123456'})
+          .end((err, res) => {
+              res.should.have.status(200)
+              res.should.be.json
+              done()
+          })
+    })
+
   })
 
   /*
@@ -169,6 +181,7 @@ describe('Users', function() {
                    .end((err, res) => {
                        res.should.have.status(200)
                        res.should.be.json
+                       res.body.should.have.property('SUCCESS')
                        res.body.SUCCESS.should.be.a('object')
                        res.body.SUCCESS.should.have.property('cnpj')
                        res.body.SUCCESS.cnpj.should.equal(aCompany.cnpj)

@@ -6,6 +6,33 @@ import PurchaseModel from '../models/purchaseModel'
 
 let api = express.Router()
 
+
+
+/*
+ *             SIGNIN
+ *
+ */
+api.route('/signup')
+    .post((req, res) => {
+        if(req.body.password !== req.body.confirm){
+            res.statusCode = 422
+            return res.send('The password that your provided does not match. Please, check the fields again.')
+        }
+
+        var user =  new UserModel()
+        user.email = req.body.email
+        user.password = req.body.password
+
+        user.save((err) => {
+            if(err){
+                return res.send(err)
+            }
+            console.log(user)
+            res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } })
+        })
+    })
+
+
 /*
  *             USER
  *

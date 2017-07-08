@@ -1,25 +1,21 @@
-export const signupUser = (signup) => {
+import Axios from 'axios';
+
+export const signupUserSuccess = (signup) => {
     return {
         type: 'SIGNUP_SUCCESS',
         signup
     }
 }
 
-export const testeSuccess = (teste) => {
-    return {
-        type: 'TESTE',
-        teste
-    }
-}
-
-
-export const teste = () => {
+export const signupUser = (data) => {
     return (dispatch) => {
-        return Axios.get('/teste')
+        return Axios.post('/api/signup', data)
             .then(response => {
-                dispatch(testeSuccess(response.data))
+                console.log(response.data)
+                dispatch(signupUserSuccess(response.data))
             })
             .catch(error =>{
+                console.log(error)
                 throw(error)
             });
     }

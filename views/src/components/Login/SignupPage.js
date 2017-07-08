@@ -21,7 +21,7 @@ class SignupPage extends React.Component{
                     e.preventDefault();
 
                     var input = {
-                        login: loginInput.value,
+                        email: loginInput.value,
                         password: passwordInput.value,
                         confirm: confirmInput.value
                     }

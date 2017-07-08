@@ -156,25 +156,28 @@ exports.default = UserModel;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var signupUser = exports.signupUser = function signupUser(signup) {
+exports.signupUser = exports.signupUserSuccess = undefined;
+
+var _axios = __webpack_require__(25);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var signupUserSuccess = exports.signupUserSuccess = function signupUserSuccess(signup) {
     return {
         type: 'SIGNUP_SUCCESS',
         signup: signup
     };
 };
 
-var testeSuccess = exports.testeSuccess = function testeSuccess(teste) {
-    return {
-        type: 'TESTE',
-        teste: teste
-    };
-};
-
-var teste = exports.teste = function teste() {
+var signupUser = exports.signupUser = function signupUser(data) {
     return function (dispatch) {
-        return Axios.get('/teste').then(function (response) {
-            dispatch(testeSuccess(response.data));
+        return _axios2.default.post('/api/signup', data).then(function (response) {
+            console.log(response.data);
+            dispatch(signupUserSuccess(response.data));
         }).catch(function (error) {
+            console.log(error);
             throw error;
         });
     };
@@ -245,6 +248,29 @@ var _purchaseModel2 = _interopRequireDefault(_purchaseModel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var api = _express2.default.Router();
+
+/*
+ *             SIGNIN
+ *
+ */
+api.route('/signup').post(function (req, res) {
+    if (req.body.password !== req.body.confirm) {
+        res.statusCode = 422;
+        return res.send('The password that your provided does not match. Please, check the fields again.');
+    }
+
+    var user = new _userModel2.default();
+    user.email = req.body.email;
+    user.password = req.body.password;
+
+    user.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+        console.log(user);
+        res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } });
+    });
+});
 
 /*
  *             USER
@@ -860,7 +886,7 @@ var SignupPage = function (_React$Component) {
                             e.preventDefault();
 
                             var input = {
-                                login: loginInput.value,
+                                email: loginInput.value,
                                 password: passwordInput.value,
                                 confirm: confirmInput.value
                             };
@@ -946,16 +972,12 @@ var _signupReducers = __webpack_require__(20);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
-var _testeReducers = __webpack_require__(21);
-
-var _testeReducers2 = _interopRequireDefault(_testeReducers);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// rootReducers
 exports.default = (0, _redux.combineReducers)({
-    signup: _signupReducers2.default, teste: _testeReducers2.default
+    signup: _signupReducers2.default
 });
+// rootReducers
 
 /***/ }),
 /* 20 */
@@ -981,29 +1003,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-exports.default = function () {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var action = arguments[1];
-
-    switch (action.type) {
-        case 'TESTE':
-            return action;
-        default:
-            return state;
-    }
-};
-
-/***/ }),
+/* 21 */,
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1050,6 +1050,13 @@ exports.default = _react2.default.createElement(
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
+
+/***/ }),
+/* 24 */,
+/* 25 */
+/***/ (function(module, exports) {
+
+module.exports = require("axios");
 
 /***/ })
 /******/ ]);
