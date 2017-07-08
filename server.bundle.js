@@ -162,6 +162,14 @@ var _axios = __webpack_require__(25);
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _errorsActions = __webpack_require__(27);
+
+var errorActions = _interopRequireWildcard(_errorsActions);
+
+var _reactRouter = __webpack_require__(2);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var signupUserSuccess = exports.signupUserSuccess = function signupUserSuccess(signup) {
@@ -176,8 +184,10 @@ var signupUser = exports.signupUser = function signupUser(data) {
         return _axios2.default.post('/api/signup', data).then(function (response) {
             console.log(response.data);
             dispatch(signupUserSuccess(response.data));
+            _reactRouter.browserHistory.push('/');
         }).catch(function (error) {
-            console.log(error);
+            console.log(error.response.data);
+            dispatch(errorActions.sendSignupErrors(error.response.data));
             throw error;
         });
     };
@@ -250,7 +260,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var api = _express2.default.Router();
 
 /*
- *             SIGNIN
+ *             LOGIN
+ *
+ */
+api.route('/login').post(function (req, res) {
+    console.log('-----------------------', req.body.email);
+    _userModel2.default.findOne({ email: req.body.email }, function (err, user) {
+        if (!user) {
+            res.statusCode = 401;
+            return res.send('Email or password are not correct');
+        }
+        if (err) {
+            return res.send(err);
+        }
+        return res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } });
+    });
+});
+
+/*
+ *             SIGNUP
  *
  */
 api.route('/signup').post(function (req, res) {
@@ -268,7 +296,7 @@ api.route('/signup').post(function (req, res) {
             return res.send(err);
         }
         console.log(user);
-        res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } });
+        res.json({ 'SUCCESS': { user: user.email, id: user._id } });
     });
 });
 
@@ -751,7 +779,15 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(7);
+
 var _reactRouter = __webpack_require__(2);
+
+var _loginActions = __webpack_require__(29);
+
+var loginActions = _interopRequireWildcard(_loginActions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -771,8 +807,17 @@ var LoginPage = function (_React$Component) {
     }
 
     _createClass(LoginPage, [{
+        key: 'handleLogin',
+        value: function handleLogin(input) {
+            this.props.login(input);
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
+            var loginInput = void 0,
+                passwordInput = null;
             return _react2.default.createElement(
                 'div',
                 null,
@@ -783,19 +828,39 @@ var LoginPage = function (_React$Component) {
                 ),
                 _react2.default.createElement(
                     'form',
-                    null,
+                    { onSubmit: function onSubmit(e) {
+                            e.preventDefault();
+
+                            var input = {
+                                email: loginInput.value,
+                                password: passwordInput.value
+                            };
+
+                            _this2.handleLogin(input);
+
+                            e.target.reset();
+                        } },
                     _react2.default.createElement(
                         'label',
                         { htmlFor: 'login' },
                         'Login'
                     ),
-                    _react2.default.createElement('input', { type: 'text', name: 'login' }),
+                    _react2.default.createElement('input', { type: 'text',
+                        ref: function ref(node) {
+                            return loginInput = node;
+                        },
+                        name: 'login' }),
                     _react2.default.createElement(
                         'label',
                         { htmlFor: 'password' },
                         'Password'
                     ),
-                    _react2.default.createElement('input', { type: 'password', name: 'password' }),
+                    _react2.default.createElement('input', {
+                        type: 'password',
+                        ref: function ref(node) {
+                            return passwordInput = node;
+                        },
+                        name: 'password' }),
                     _react2.default.createElement(
                         _reactRouter.Link,
                         { to: '/signup' },
@@ -814,7 +879,19 @@ var LoginPage = function (_React$Component) {
     return LoginPage;
 }(_react2.default.Component);
 
-exports.default = LoginPage;
+var mapStateRoProps = function mapStateRoProps(state, ownProps) {
+    return state;
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+    return {
+        login: function login(loginInput) {
+            return dispatch(loginActions.login(loginInput));
+        }
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(LoginPage);
 
 /***/ }),
 /* 18 */
@@ -972,10 +1049,18 @@ var _signupReducers = __webpack_require__(20);
 
 var _signupReducers2 = _interopRequireDefault(_signupReducers);
 
+var _loginReducers = __webpack_require__(28);
+
+var _loginReducers2 = _interopRequireDefault(_loginReducers);
+
+var _errorsReducers = __webpack_require__(26);
+
+var _errorsReducers2 = _interopRequireDefault(_errorsReducers);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _redux.combineReducers)({
-    signup: _signupReducers2.default
+    signup: _signupReducers2.default, errors: _errorsReducers2.default, login: _loginReducers2.default
 });
 // rootReducers
 
@@ -1057,6 +1142,136 @@ module.exports = require("react-dom/server");
 /***/ (function(module, exports) {
 
 module.exports = require("axios");
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case 'SIGNUP_ERRORS':
+            return { type: 'SIGNUP', message: action.errors };
+        case 'LOGIN_ERRORS':
+            return { type: 'LOGIN', message: action.errors };
+        default:
+            return state;
+    }
+};
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var signupErrors = exports.signupErrors = function signupErrors(errors) {
+    return {
+        type: 'SIGNUP_ERRORS',
+        errors: errors
+    };
+};
+var loginErrors = exports.loginErrors = function loginErrors(errors) {
+    return {
+        type: 'LOGIN_ERRORS',
+        errors: errors
+    };
+};
+
+var sendLoginErrors = exports.sendLoginErrors = function sendLoginErrors(errors) {
+    return function (dispatch) {
+        dispatch(loginErrors(errors));
+    };
+};
+
+var sendSignupErrors = exports.sendSignupErrors = function sendSignupErrors(errors) {
+    return function (dispatch) {
+        dispatch(signupErrors(errors));
+    };
+};
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case 'LOGIN_SUCCESS':
+            return action.login;
+        default:
+            return state;
+    }
+};
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.login = exports.loginSuccess = undefined;
+
+var _axios = __webpack_require__(25);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _errorsActions = __webpack_require__(27);
+
+var errorActions = _interopRequireWildcard(_errorsActions);
+
+var _reactRouter = __webpack_require__(2);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var loginSuccess = exports.loginSuccess = function loginSuccess(login) {
+    return {
+        type: 'LOGIN_SUCCESS',
+        login: login
+    };
+};
+
+var login = exports.login = function login(data) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/login', data).then(function (response) {
+            console.log(response.data);
+            dispatch(loginSuccess(response.data));
+            // browserHistory.push('/')
+        }).catch(function (error) {
+            console.log(error.response.data);
+            dispatch(errorActions.sendLoginErrors(error.response.data));
+            throw error;
+        });
+    };
+};
 
 /***/ })
 /******/ ]);

@@ -2,24 +2,24 @@ import Axios from 'axios';
 import * as errorActions from './errorsActions';
 import { browserHistory } from 'react-router';
 
-export const signupUserSuccess = (signup) => {
+export const loginSuccess = (login) => {
     return {
-        type: 'SIGNUP_SUCCESS',
-        signup
+        type: 'LOGIN_SUCCESS',
+        login
     }
 }
 
-export const signupUser = (data) => {
+export const login = (data) => {
     return (dispatch) => {
-        return Axios.post('/api/signup', data)
+        return Axios.post('/api/login', data)
             .then(response => {
                 console.log(response.data)
-                dispatch(signupUserSuccess(response.data))
-                browserHistory.push('/')
+                dispatch(loginSuccess(response.data))
+                // browserHistory.push('/')
             })
             .catch(error =>{
                 console.log(error.response.data)
-                dispatch(errorActions.sendSignupErrors(error.response.data))
+                dispatch(errorActions.sendLoginErrors(error.response.data))
                 throw(error)
             });
     }

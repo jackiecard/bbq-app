@@ -7,9 +7,28 @@ import PurchaseModel from '../models/purchaseModel'
 let api = express.Router()
 
 
+/*
+ *             LOGIN
+ *
+ */
+api.route('/login')
+    .post((req, res) => {
+        console.log('-----------------------', req.body.email)
+        UserModel.findOne({ email: req.body.email }, function (err, user) {
+            if (!user){
+                res.statusCode = 401
+                return res.send('Email or password are not correct')
+            }
+            if (err){
+                return res.send(err)
+            }
+            return res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } })
+        })
+    })
+
 
 /*
- *             SIGNIN
+ *             SIGNUP
  *
  */
 api.route('/signup')
@@ -28,7 +47,7 @@ api.route('/signup')
                 return res.send(err)
             }
             console.log(user)
-            res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } })
+            res.json({ 'SUCCESS': { user: user.email, id: user._id } })
         })
     })
 

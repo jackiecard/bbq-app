@@ -47,7 +47,6 @@ class SignupPage extends React.Component{
                         type="password"
                         ref={ node => confirmInput = node }
                         name="confirm-password" />
-
                     <button type="submit">Sign Up</button>
                 </form>
             </div>
