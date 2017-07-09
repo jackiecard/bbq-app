@@ -7,6 +7,7 @@ import SignupPage from './components/Login/SignupPage';
 import DashboardPage from './components/Dashboard/DashboardPage';
 import RegisterPage from './components/Dashboard/RegisterCompanyPage';
 import MyAccountPage from './components/Dashboard/MyAccountPage';
+import PurchasePage from './components/Dashboard/NewPurchasePage';
 
 export default (
 
@@ -17,6 +18,7 @@ export default (
             <Route path="/dashboard" component={ DashboardPage }></Route>
             <Route path="/register" component={ RegisterPage }></Route>
             <Route path="/myaccount" component={ MyAccountPage }></Route>
+            <Route path="/purchase" component={ PurchasePage }></Route>
         </Route>
     </Router>
 );

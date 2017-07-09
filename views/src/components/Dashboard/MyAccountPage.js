@@ -9,9 +9,11 @@ class MyAccountPage extends React.Component{
     }
 
     handleSettings(input){
-        input._id = this.props.userId
-        console.log(input)
-        this.props.changeAccountSettings(input)
+        let userInput = {
+            id: this.props.userId,
+            params: input
+        }
+        this.props.changeAccountSettings(userInput)
     }
 
     render(){

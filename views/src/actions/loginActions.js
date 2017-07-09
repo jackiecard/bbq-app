@@ -31,12 +31,13 @@ export const login = (data) => {
 
 export const changeAccountSettings = (data) => {
     return (dispatch) => {
-        return Axios.put('/api/login/', data)
+        return Axios.put('/api/login/' + data.id, data.params)
             .then(response => {
                 dispatch(accountChanged(response.data))
                 browserHistory.push('/dashboard')
             })
             .catch(error =>{
+                console.log(error)
                 dispatch(errorActions.sendLoginErrors(error.response.data))
                 throw(error)
             });

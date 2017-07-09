@@ -362,9 +362,11 @@ api.route('/login').post(function (req, res) {
         }
         return res.json({ 'AUTHENTICATED': { email: user.email, _id: user._id } });
     });
-}).put(function (req, res) {
-    console.log(req.body);
-    _userModel2.default.findById(req.body._id, function (e, user) {
+});
+
+api.route('/login/:id').put(function (req, res) {
+    console.log(req.body, req.params.id);
+    _userModel2.default.findById(req.params.id, function (e, user) {
         if (e) {
             return res.send(e);
         }
@@ -376,10 +378,11 @@ api.route('/login').post(function (req, res) {
         user.password = req.body.password || user.password;
 
         user.save(function (err, updatedUser) {
+            console.log('---------- updated user: ', updatedUser);
             if (err) {
                 return res.sendStatus(500, err);
             }
-            res.json({ 'UPDATED': { email: updatedUser.email, _id: updatedUser._id } });
+            res.json({ 'AUTHENTICATED': { email: updatedUser.email, _id: updatedUser._id } });
         });
     });
 });
@@ -844,10 +847,11 @@ var login = exports.login = function login(data) {
 
 var changeAccountSettings = exports.changeAccountSettings = function changeAccountSettings(data) {
     return function (dispatch) {
-        return _axios2.default.put('/api/login/', data).then(function (response) {
+        return _axios2.default.put('/api/login/' + data.id, data.params).then(function (response) {
             dispatch(accountChanged(response.data));
             _reactRouter.browserHistory.push('/dashboard');
         }).catch(function (error) {
+            console.log(error);
             dispatch(errorActions.sendLoginErrors(error.response.data));
             throw error;
         });
@@ -931,7 +935,6 @@ var DashboardPage = function (_React$Component) {
     _createClass(DashboardPage, [{
         key: 'generateRows',
         value: function generateRows() {
-            console.log(this.props.companyList);
             if (this.props.companyList.length === 0) {
                 return _react2.default.createElement(
                     'tr',
@@ -1056,7 +1059,11 @@ var MenuComponent = function MenuComponent(props) {
             _react2.default.createElement(
                 'li',
                 null,
-                'New purchase'
+                _react2.default.createElement(
+                    _reactRouter.Link,
+                    { to: '/purchase' },
+                    'New purchase'
+                )
             ),
             _react2.default.createElement(
                 'li',
@@ -1500,6 +1507,10 @@ var _MyAccountPage = __webpack_require__(33);
 
 var _MyAccountPage2 = _interopRequireDefault(_MyAccountPage);
 
+var _NewPurchasePage = __webpack_require__(34);
+
+var _NewPurchasePage2 = _interopRequireDefault(_NewPurchasePage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createElement(
@@ -1512,7 +1523,8 @@ exports.default = _react2.default.createElement(
         _react2.default.createElement(_reactRouter.Route, { path: '/signup', component: _SignupPage2.default }),
         _react2.default.createElement(_reactRouter.Route, { path: '/dashboard', component: _DashboardPage2.default }),
         _react2.default.createElement(_reactRouter.Route, { path: '/register', component: _RegisterCompanyPage2.default }),
-        _react2.default.createElement(_reactRouter.Route, { path: '/myaccount', component: _MyAccountPage2.default })
+        _react2.default.createElement(_reactRouter.Route, { path: '/myaccount', component: _MyAccountPage2.default }),
+        _react2.default.createElement(_reactRouter.Route, { path: '/purchase', component: _NewPurchasePage2.default })
     )
 );
 
@@ -1776,9 +1788,11 @@ var MyAccountPage = function (_React$Component) {
     _createClass(MyAccountPage, [{
         key: 'handleSettings',
         value: function handleSettings(input) {
-            input._id = this.props.userId;
-            console.log(input);
-            this.props.changeAccountSettings(input);
+            var userInput = {
+                id: this.props.userId,
+                params: input
+            };
+            this.props.changeAccountSettings(userInput);
         }
     }, {
         key: 'render',
@@ -1857,6 +1871,259 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(MyAccountPage);
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(3);
+
+var _MenuComponent = __webpack_require__(21);
+
+var _MenuComponent2 = _interopRequireDefault(_MenuComponent);
+
+var _ItemListComponent = __webpack_require__(35);
+
+var _ItemListComponent2 = _interopRequireDefault(_ItemListComponent);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NewPurchasePage = function (_React$Component) {
+    _inherits(NewPurchasePage, _React$Component);
+
+    function NewPurchasePage(props) {
+        _classCallCheck(this, NewPurchasePage);
+
+        return _possibleConstructorReturn(this, (NewPurchasePage.__proto__ || Object.getPrototypeOf(NewPurchasePage)).call(this, props));
+    }
+
+    _createClass(NewPurchasePage, [{
+        key: 'handleSettings',
+        value: function handleSettings() {}
+    }, {
+        key: 'render',
+        value: function render() {
+
+            var items = [{ name: 'Cerveja', quantity: 20 }, { name: 'Carne', quantity: 38 }, { name: 'Chocolate', quantity: 10 }];
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_MenuComponent2.default, null),
+                _react2.default.createElement(
+                    'h1',
+                    null,
+                    'New Purchase'
+                ),
+                _react2.default.createElement(
+                    'form',
+                    { onSubmit: function onSubmit(e) {
+                            e.preventDefault();
+
+                            e.target.reset();
+                        } },
+                    _react2.default.createElement(
+                        'select',
+                        null,
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'grapefruit' },
+                            'Grapefruit'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'lime' },
+                            'Lime'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { defaultValue: 'coconut' },
+                            'Coconut'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'mango' },
+                            'Mango'
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'select',
+                        null,
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'grapefruit' },
+                            'Grapefruit'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'lime' },
+                            'Lime'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { defaultValue: 'coconut' },
+                            'Coconut'
+                        ),
+                        _react2.default.createElement(
+                            'option',
+                            { value: 'mango' },
+                            'Mango'
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'label',
+                        { htmlFor: 'email' },
+                        'Qtd:'
+                    ),
+                    _react2.default.createElement('input', { type: 'text',
+                        name: 'email' }),
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'submit' },
+                        'Adicionar'
+                    )
+                ),
+                _react2.default.createElement(_ItemListComponent2.default, { items: items })
+            );
+        }
+    }]);
+
+    return NewPurchasePage;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+    return state;
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+    return {};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(NewPurchasePage);
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ItemListComponent = function (_React$Component) {
+    _inherits(ItemListComponent, _React$Component);
+
+    function ItemListComponent(props) {
+        _classCallCheck(this, ItemListComponent);
+
+        return _possibleConstructorReturn(this, (ItemListComponent.__proto__ || Object.getPrototypeOf(ItemListComponent)).call(this, props));
+    }
+
+    _createClass(ItemListComponent, [{
+        key: 'generateRows',
+        value: function generateRows() {
+            if (this.props.items === 0) {
+                return _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement('td', null),
+                    _react2.default.createElement(
+                        'td',
+                        null,
+                        'nothing'
+                    ),
+                    _react2.default.createElement('td', null)
+                );
+            }
+
+            var data = this.props.items;
+
+            return data.map(function (item) {
+
+                return _react2.default.createElement(
+                    'tr',
+                    { key: item.name },
+                    _react2.default.createElement(
+                        'td',
+                        null,
+                        item.name
+                    ),
+                    _react2.default.createElement(
+                        'td',
+                        null,
+                        item.quantity
+                    ),
+                    _react2.default.createElement(
+                        'td',
+                        null,
+                        'X'
+                    )
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            console.log('--------- props item list', this.props);
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    'table',
+                    null,
+                    _react2.default.createElement(
+                        'tbody',
+                        null,
+                        this.generateRows()
+                    )
+                )
+            );
+        }
+    }]);
+
+    return ItemListComponent;
+}(_react2.default.Component);
+
+;
+
+exports.default = ItemListComponent;
 
 /***/ })
 /******/ ]);

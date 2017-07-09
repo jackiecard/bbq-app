@@ -24,9 +24,11 @@ api.route('/login')
             return res.json({ 'AUTHENTICATED': { email: user.email, _id: user._id } })
         })
     })
+
+api.route('/login/:id')
     .put((req, res) => {
-        console.log(req.body)
-        UserModel.findById(req.body._id, (e, user) => {
+        console.log(req.body, req.params.id)
+        UserModel.findById(req.params.id, (e, user) => {
             if(e){
                 return res.send(e)
             }
@@ -38,10 +40,11 @@ api.route('/login')
             user.password= req.body.password || user.password
 
             user.save((err, updatedUser) => {
+                console.log('---------- updated user: ', updatedUser)
                 if(err){
                     return res.sendStatus(500, err)
                 }
-                res.json({ 'UPDATED': { email: updatedUser.email, _id: updatedUser._id } })
+                res.json({ 'AUTHENTICATED': { email: updatedUser.email, _id: updatedUser._id } })
             })
         })
     })

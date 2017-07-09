@@ -8,7 +8,6 @@ class DashboardPage extends React.Component{
     }
 
     generateRows() {
-        console.log(this.props.companyList)
         if(this.props.companyList.length === 0){
             return <tr>
                         <td></td>
