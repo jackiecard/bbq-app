@@ -7,18 +7,44 @@ class DashboardPage extends React.Component{
         super(props)
     }
 
+    generateRows() {
+        console.log(this.props.companyList)
+        if(this.props.companyList.length === 0){
+            return <tr>
+                        <td></td>
+                        <td>nothing</td>
+                        <td></td>
+                    </tr>
+        }
+
+        var data = this.props.companyList;
+
+        return data.map(company => {
+            return <tr key={ company.SUCCESS.cnpj }>
+                        <td>{ company.SUCCESS.cnpj }</td>
+                        <td>{ company.SUCCESS.name }</td>
+                        <td>50</td>
+                    </tr>
+        });
+    }
+
     render(){
         return (
             <div>
-                <h1>Dashboard</h1>
                 <MenuComponent />
+                <h1>Dashboard</h1>
+                <table>
+                    <tbody>
+                        { this.generateRows() }
+                    </tbody>
+                </table>
             </div>
         )
     }
 }
 
-const mapStateRoProps = (state, ownProps) => {
-    return state
+const mapStateToProps = (state, ownProps) => {
+    return { companyList: state.company.list }
 }
 
 const mapDispatchToProps = (dispatch) =>{
@@ -27,4 +53,4 @@ const mapDispatchToProps = (dispatch) =>{
     }
 }
 
-export default connect(null, mapDispatchToProps)(DashboardPage);
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardPage);

@@ -21,7 +21,28 @@ api.route('/login')
             if (err){
                 return res.send(err)
             }
-            return res.json({ 'AUTHENTICATED': { user: user.email, id: user._id } })
+            return res.json({ 'AUTHENTICATED': { email: user.email, _id: user._id } })
+        })
+    })
+    .put((req, res) => {
+        console.log(req.body)
+        UserModel.findById(req.body._id, (e, user) => {
+            if(e){
+                return res.send(e)
+            }
+            if(!user){
+                return res.sendStatus(404)
+            }
+
+            user.email= req.body.email || user.email
+            user.password= req.body.password || user.password
+
+            user.save((err, updatedUser) => {
+                if(err){
+                    return res.sendStatus(500, err)
+                }
+                res.json({ 'UPDATED': { email: updatedUser.email, _id: updatedUser._id } })
+            })
         })
     })
 

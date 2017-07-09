@@ -49,7 +49,7 @@ class LoginPage extends React.Component{
 }
 
 
-const mapStateRoProps = (state, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
     return state
 }
 

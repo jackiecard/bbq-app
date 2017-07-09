@@ -11,6 +11,18 @@ export const loginErrors = (errors) => {
     }
 }
 
+export const companyErrors = (errors) => {
+    return {
+        type: 'COMPANY_ERRORS',
+        errors
+    }
+}
+
+export const sendCompanyErrors = (errors) => {
+    return (dispatch) => {
+        dispatch(loginErrors(errors))
+    }
+}
 
 export const sendLoginErrors = (errors) => {
     return (dispatch) => {

@@ -5,6 +5,8 @@ import App from './components/App';
 import LoginPage from './components/Login/LoginPage';
 import SignupPage from './components/Login/SignupPage';
 import DashboardPage from './components/Dashboard/DashboardPage';
+import RegisterPage from './components/Dashboard/RegisterCompanyPage';
+import MyAccountPage from './components/Dashboard/MyAccountPage';
 
 export default (
 
@@ -13,6 +15,8 @@ export default (
             <IndexRoute component={ LoginPage }/>
             <Route path="/signup" component={ SignupPage }></Route>
             <Route path="/dashboard" component={ DashboardPage }></Route>
+            <Route path="/register" component={ RegisterPage }></Route>
+            <Route path="/myaccount" component={ MyAccountPage }></Route>
         </Route>
     </Router>
 );

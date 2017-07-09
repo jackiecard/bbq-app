@@ -49,14 +49,6 @@ router.get('/', (req, res) => {
 			But if you inject the latest items/articles before it reaches the user, the Search Engine will see the
 			item/article immediately.
 			 */
-			// store.dispatch({
-			//     type: SIGNUP_SUCCESS,
-            //     payload: {
-            //         login: 'user',
-            //         password: 'pass',
-            //         confirm: 'pass'
-            //     }
-            // });
 
 			const finalState = store.getState();
 
