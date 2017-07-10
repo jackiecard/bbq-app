@@ -17,7 +17,7 @@ class SignupPage extends React.Component{
         return (
             <div>
                 <h1>Sign Up</h1>
-                <form onSubmit={ e =>{
+                <form className="login-form" onSubmit={ e =>{
                     e.preventDefault();
 
                     var input = {
@@ -47,7 +47,9 @@ class SignupPage extends React.Component{
                         type="password"
                         ref={ node => confirmInput = node }
                         name="confirm-password" />
-                    <button type="submit">Sign Up</button>
+                    <div className="login-form__action">
+                        <button type="submit">Sign Up</button>
+                    </div>
                 </form>
             </div>
         )

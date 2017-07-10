@@ -50,7 +50,7 @@ module.exports = [
                 query: {
                     presets: ['react', 'es2015', 'stage-1']
                 }
-            }]
+            },{ test: /\.css$/, loader: "style-loader!css-loader" }]
         }
         //If you want to minify your files uncomment this
         // ,

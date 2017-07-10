@@ -17,7 +17,7 @@ class LoginPage extends React.Component{
         return (
             <div>
                 <h1>Login</h1>
-                <form onSubmit={ e =>{
+                <form className="login-form" onSubmit={ e =>{
                     e.preventDefault();
 
                     var input = {
@@ -40,8 +40,10 @@ class LoginPage extends React.Component{
                         ref={ node => passwordInput = node}
                         name="password" />
 
-                    <Link to="/signup">Nova Conta</Link>
-                    <button type="submit">Login</button>
+                    <div className="login-form__action">
+                        <Link to="/signup" className="button">Nova Conta</Link>
+                        <button type="submit">Login</button>
+                    </div>
                 </form>
             </div>
         )

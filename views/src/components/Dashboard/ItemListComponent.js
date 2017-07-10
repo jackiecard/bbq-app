@@ -9,7 +9,7 @@ class ItemListComponent extends React.Component {
         if(this.props.items === 0){
             return <tr>
                         <td></td>
-                        <td>nothing</td>
+                        <td>nothing to show yet.</td>
                         <td></td>
                     </tr>
         }
@@ -27,7 +27,6 @@ class ItemListComponent extends React.Component {
     }
 
     render(){
-        console.log('--------- props item list', this.props)
         return (
             <div>
                 <table>

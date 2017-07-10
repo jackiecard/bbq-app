@@ -8,7 +8,40 @@ class NewPurchasePage extends React.Component{
         super(props)
     }
 
-    handleSettings(){
+    handleItemList(){
+
+    }
+
+    handleCompanyChange(e){
+        console.log(e.target.value)
+    }
+
+    handleProductChange(e){
+        // this.props.item.name = e.target.value
+        console.log(e.target.value)
+    }
+
+    generateCompanyOptions(){
+        if(!this.props.companies){
+            return
+        }
+
+        var data = this.props.companies;
+
+        return data.map(company => {
+            return <option key={ company.SUCCESS.cnpj } value={ company.SUCCESS.cnpj }>{ company.SUCCESS.name }</option>
+        })
+
+    }
+
+    generateProductsOptions(products){
+        if(!products){
+            return
+        }
+        return products.map(product => {
+            return <option key={ product } value={ product }>{ product }</option>
+        })
+
     }
 
     render(){
@@ -19,6 +52,8 @@ class NewPurchasePage extends React.Component{
             { name: 'Chocolate', quantity: 10 }
         ]
 
+        let products = [ 'Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage' ]
+
         return (
             <div>
                 <MenuComponent />
@@ -28,23 +63,17 @@ class NewPurchasePage extends React.Component{
 
                     e.target.reset();
                 }}>
-                    <select>
-                        <option value="grapefruit">Grapefruit</option>
-                        <option value="lime">Lime</option>
-                        <option defaultValue="coconut">Coconut</option>
-                        <option value="mango">Mango</option>
+                    <select onChange={this.handleCompanyChange}>
+                        { this.generateCompanyOptions() }
                     </select>
 
-                    <select>
-                        <option value="grapefruit">Grapefruit</option>
-                        <option value="lime">Lime</option>
-                        <option defaultValue="coconut">Coconut</option>
-                        <option value="mango">Mango</option>
+                    <select onChange={this.handleProductChange}>
+                        { this.generateProductsOptions(products) }
                     </select>
 
                     <label htmlFor="email">Qtd:</label>
-                    <input type="text"
-                           name="email" />
+                    <input type="number"
+                           name="quantity" />
 
                     <button type="submit">Adicionar</button>
                 </form>
@@ -55,12 +84,12 @@ class NewPurchasePage extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return state
+    return { companies: state.company.list, item: state.item }
 }
 
 const mapDispatchToProps = (dispatch) =>{
     return{
-
+        // addItemName: userInput => dispatch(loginActions.addItemName(userInput))
     }
 }
 

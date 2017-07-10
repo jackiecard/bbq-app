@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 const App = (props) => {
     return (
         <div>
-            <h1>BBQ App</h1>
+            <div className="logo"></div>
             { props.children }
         </div>
     )
