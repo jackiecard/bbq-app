@@ -6,6 +6,8 @@ export default (state = [], action) => {
             return { type: 'SIGNUP', message: action.errors }
         case 'LOGIN_ERRORS':
             return { type: 'LOGIN', message: action.errors }
+        case 'ITEM_ERRORS':
+            return { type: 'ITEM', message: action.errors }
         default:
             return state
     }

@@ -37,7 +37,6 @@ export const changeAccountSettings = (data) => {
                 browserHistory.push('/dashboard')
             })
             .catch(error =>{
-                console.log(error)
                 dispatch(errorActions.sendLoginErrors(error.response.data))
                 throw(error)
             });

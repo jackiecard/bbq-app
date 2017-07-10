@@ -373,7 +373,6 @@ var changeAccountSettings = exports.changeAccountSettings = function changeAccou
             dispatch(accountChanged(response.data));
             _reactRouter.browserHistory.push('/dashboard');
         }).catch(function (error) {
-            console.log(error);
             dispatch(errorActions.sendLoginErrors(error.response.data));
             throw error;
         });
@@ -503,7 +502,6 @@ api.route('/login').post(function (req, res) {
 });
 
 api.route('/login/:id').put(function (req, res) {
-    console.log(req.body, req.params.id);
     _userModel2.default.findById(req.params.id, function (e, user) {
         if (e) {
             return res.send(e);
@@ -516,7 +514,6 @@ api.route('/login/:id').put(function (req, res) {
         user.password = req.body.password || user.password;
 
         user.save(function (err, updatedUser) {
-            console.log('---------- updated user: ', updatedUser);
             if (err) {
                 return res.sendStatus(500, err);
             }
@@ -543,7 +540,6 @@ api.route('/signup').post(function (req, res) {
         if (err) {
             return res.send(err);
         }
-        console.log(user);
         res.json({ 'SUCCESS': { user: user.email, id: user._id } });
     });
 });
@@ -661,8 +657,7 @@ api.route('/items').get(function (req, res) {
         if (err) {
             return res.send(err);
         }
-
-        res.json({ 'SUCCESS': item });
+        res.json(item);
     });
 });
 
@@ -672,7 +667,7 @@ api.route('/item/:id').get(function (req, res) {
             return res.send(err);
         }
 
-        res.json({ 'SUCCESS': item });
+        res.json(item);
     });
 });
 
@@ -1386,9 +1381,9 @@ var _MenuComponent = __webpack_require__(4);
 
 var _MenuComponent2 = _interopRequireDefault(_MenuComponent);
 
-var _ItemListComponent = __webpack_require__(23);
+var _ItemPurchasePage = __webpack_require__(37);
 
-var _ItemListComponent2 = _interopRequireDefault(_ItemListComponent);
+var _ItemPurchasePage2 = _interopRequireDefault(_ItemPurchasePage);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1408,17 +1403,9 @@ var NewPurchasePage = function (_React$Component) {
     }
 
     _createClass(NewPurchasePage, [{
-        key: 'handleItemList',
-        value: function handleItemList() {}
-    }, {
         key: 'handleCompanyChange',
         value: function handleCompanyChange(e) {
-            console.log(e.target.value);
-        }
-    }, {
-        key: 'handleProductChange',
-        value: function handleProductChange(e) {
-            // this.props.item.name = e.target.value
+
             console.log(e.target.value);
         }
     }, {
@@ -1439,26 +1426,8 @@ var NewPurchasePage = function (_React$Component) {
             });
         }
     }, {
-        key: 'generateProductsOptions',
-        value: function generateProductsOptions(products) {
-            if (!products) {
-                return;
-            }
-            return products.map(function (product) {
-                return _react2.default.createElement(
-                    'option',
-                    { key: product, value: product },
-                    product
-                );
-            });
-        }
-    }, {
         key: 'render',
         value: function render() {
-
-            var items = [{ name: 'Cerveja', quantity: 20 }, { name: 'Carne', quantity: 38 }, { name: 'Chocolate', quantity: 10 }];
-
-            var products = ['Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage'];
 
             return _react2.default.createElement(
                 'div',
@@ -1469,6 +1438,7 @@ var NewPurchasePage = function (_React$Component) {
                     null,
                     'New Purchase'
                 ),
+                _react2.default.createElement(_ItemPurchasePage2.default, null),
                 _react2.default.createElement(
                     'form',
                     { onSubmit: function onSubmit(e) {
@@ -1482,24 +1452,11 @@ var NewPurchasePage = function (_React$Component) {
                         this.generateCompanyOptions()
                     ),
                     _react2.default.createElement(
-                        'select',
-                        { onChange: this.handleProductChange },
-                        this.generateProductsOptions(products)
-                    ),
-                    _react2.default.createElement(
-                        'label',
-                        { htmlFor: 'email' },
-                        'Qtd:'
-                    ),
-                    _react2.default.createElement('input', { type: 'number',
-                        name: 'quantity' }),
-                    _react2.default.createElement(
                         'button',
                         { type: 'submit' },
-                        'Adicionar'
+                        'Purchase'
                     )
-                ),
-                _react2.default.createElement(_ItemListComponent2.default, { items: items })
+                )
             );
         }
     }]);
@@ -1508,7 +1465,7 @@ var NewPurchasePage = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-    return { companies: state.company.list, item: state.item };
+    return { companies: state.company.list };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
@@ -1979,6 +1936,8 @@ exports.default = function () {
             return { type: 'SIGNUP', message: action.errors };
         case 'LOGIN_ERRORS':
             return { type: 'LOGIN', message: action.errors };
+        case 'ITEM_ERRORS':
+            return { type: 'ITEM', message: action.errors };
         default:
             return state;
     }
@@ -2035,13 +1994,21 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var initialUserState = {
+    list: []
+};
+
 exports.default = function () {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialUserState;
     var action = arguments[1];
 
     switch (action.type) {
         case 'ADD_ITEM':
-            return action.item;
+            return _extends({}, state, { list: state.list.concat(action.item) });
+        case 'REMOVE_ITEM':
+            return _extends({}, state, { list: state.list.concat(action.item) });
         default:
             return state;
     }
@@ -2162,6 +2129,211 @@ exports.default = _react2.default.createElement(
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(2);
+
+var _ItemListComponent = __webpack_require__(23);
+
+var _ItemListComponent2 = _interopRequireDefault(_ItemListComponent);
+
+var _itemActions = __webpack_require__(38);
+
+var itemActions = _interopRequireWildcard(_itemActions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ItemPurchasePage = function (_React$Component) {
+    _inherits(ItemPurchasePage, _React$Component);
+
+    function ItemPurchasePage(props, currentItem) {
+        _classCallCheck(this, ItemPurchasePage);
+
+        var _this = _possibleConstructorReturn(this, (ItemPurchasePage.__proto__ || Object.getPrototypeOf(ItemPurchasePage)).call(this, props));
+
+        console.log('items-------', _this.props.items);
+        return _this;
+    }
+
+    _createClass(ItemPurchasePage, [{
+        key: 'generateProductsOptions',
+        value: function generateProductsOptions(products) {
+            if (!products) {
+                return;
+            }
+            return products.map(function (product) {
+                return _react2.default.createElement(
+                    'option',
+                    { key: product,
+                        value: product },
+                    product
+                );
+            });
+        }
+    }, {
+        key: 'handleAddItem',
+        value: function handleAddItem(itemInput) {
+            this.props.actions.addItem(itemInput);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var items = this.props.items || [{ name: 'Beer', quantity: '2' }];
+
+            var products = ['Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage'];
+
+            var nameInput,
+                quantityInput = null;
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    'form',
+                    { onSubmit: function onSubmit(e) {
+                            e.preventDefault();
+
+                            var itemInput = {
+                                name: nameInput.value,
+                                quantity: quantityInput.value
+                            };
+
+                            _this2.handleAddItem(itemInput);
+
+                            e.target.reset();
+                        } },
+                    _react2.default.createElement(
+                        'select',
+                        { ref: function ref(node) {
+                                return nameInput = node;
+                            } },
+                        this.generateProductsOptions(products)
+                    ),
+                    _react2.default.createElement(
+                        'label',
+                        { htmlFor: 'email' },
+                        'Qt:'
+                    ),
+                    _react2.default.createElement('input', { type: 'number',
+                        ref: function ref(node) {
+                            return quantityInput = node;
+                        },
+                        name: 'quantity' }),
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'submit' },
+                        'Add'
+                    )
+                ),
+                _react2.default.createElement(_ItemListComponent2.default, { items: items })
+            );
+        }
+    }]);
+
+    return ItemPurchasePage;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+    return { items: state.item.list };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+    return {
+        actions: {
+            addItem: function addItem(item) {
+                return dispatch(itemActions.addItem(item));
+            },
+            removeItem: function removeItem(item) {
+                return dispatch(itemActions.removeItem(item));
+            }
+        }
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ItemPurchasePage);
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.removeItem = exports.addItem = exports.removeItemSuccess = exports.addItemSuccess = undefined;
+
+var _axios = __webpack_require__(7);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _errorsActions = __webpack_require__(6);
+
+var errorActions = _interopRequireWildcard(_errorsActions);
+
+var _reactRouter = __webpack_require__(1);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var addItemSuccess = exports.addItemSuccess = function addItemSuccess(item) {
+    return {
+        type: 'ADD_ITEM',
+        item: item
+    };
+};
+
+var removeItemSuccess = exports.removeItemSuccess = function removeItemSuccess(item) {
+    return {
+        type: 'REMOVE_ITEM',
+        item: item
+    };
+};
+
+var addItem = exports.addItem = function addItem(item) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/items', item).then(function (response) {
+            dispatch(addItemSuccess(response.data));
+        }).catch(function (error) {
+            dispatch(errorActions.sendItemErrors(error.response.data));
+            throw error;
+        });
+    };
+};
+
+var removeItem = exports.removeItem = function removeItem(item) {
+    return function (dispatch) {
+        return dispatch(removeItemSuccess(item));
+    };
+};
 
 /***/ })
 /******/ ]);

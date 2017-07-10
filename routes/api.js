@@ -27,7 +27,6 @@ api.route('/login')
 
 api.route('/login/:id')
     .put((req, res) => {
-        console.log(req.body, req.params.id)
         UserModel.findById(req.params.id, (e, user) => {
             if(e){
                 return res.send(e)
@@ -40,7 +39,6 @@ api.route('/login/:id')
             user.password= req.body.password || user.password
 
             user.save((err, updatedUser) => {
-                console.log('---------- updated user: ', updatedUser)
                 if(err){
                     return res.sendStatus(500, err)
                 }
@@ -69,7 +67,6 @@ api.route('/signup')
             if(err){
                 return res.send(err)
             }
-            console.log(user)
             res.json({ 'SUCCESS': { user: user.email, id: user._id } })
         })
     })
@@ -201,8 +198,7 @@ api.route('/company/:cnpj')
              if(err){
                  return res.send(err)
              }
-
-             res.json({ 'SUCCESS': item })
+             res.json(item)
          })
      })
 
@@ -213,7 +209,7 @@ api.route('/item/:id')
              return res.send(err)
          }
 
-         res.json({ 'SUCCESS': item })
+         res.json(item)
      })
  })
 
