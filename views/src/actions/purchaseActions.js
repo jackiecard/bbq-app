@@ -2,41 +2,41 @@ import Axios from 'axios';
 import * as errorActions from './errorsActions';
 import { browserHistory } from 'react-router';
 
-export const addItemSuccess = (item) => {
+export const addPurchaseSuccess = (item) => {
     return {
-        type: 'ADD_ITEM',
+        type: 'ADD_PURCHASE',
         item
     }
 }
 
-export const removeItemSuccess = (item) => {
+export const removePurchaseSuccess = (item) => {
     return {
-        type: 'REMOVE_ITEM',
+        type: 'REMOVE_PURCHASE',
         item
     }
 }
 
-export const addItem = (item) => {
+export const addPurchase = (item) => {
     return (dispatch) => {
         return Axios.post('/api/items', item)
             .then(response => {
-                dispatch(addItemSuccess(response.data))
+                dispatch(addPurchaseSuccess(response.data))
             })
             .catch(error =>{
-                dispatch(errorActions.sendItemErrors(error.response.data))
+                dispatch(errorActions.sendPurchaseErrors(error.response.data))
                 throw(error)
             });
     }
 }
 
-export const removeItem = (item) => {
+export const removePurchase = (item) => {
     return (dispatch) => {
         return Axios.delete('/api/items', item)
             .then(response => {
-                dispatch(addItemSuccess(response.data))
+                dispatch(addPurchaseSuccess(response.data))
             })
             .catch(error =>{
-                dispatch(errorActions.sendItemErrors(error.response.data))
+                dispatch(errorActions.sendPurchaseErrors(error.response.data))
                 throw(error)
             });
     }

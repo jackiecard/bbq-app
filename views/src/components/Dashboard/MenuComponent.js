@@ -10,7 +10,7 @@ const MenuComponent = (props) => {
                 <li><Link to="/register">Register new company</Link></li>
                 <li><Link to="/purchase">New purchase</Link></li>
                 <li><Link to="/myaccount">My account</Link></li>
-                <li>Logout</li>
+                <li><Link to="/">Logout</Link></li>
             </ul>
         </div>
     );

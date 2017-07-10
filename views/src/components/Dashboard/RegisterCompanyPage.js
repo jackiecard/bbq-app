@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import MenuComponent from './MenuComponent'
 import * as companyActions from '../../actions/companyActions'
+import MaskedInput from 'react-maskedinput'
 
 class RegisterPage extends React.Component{
     constructor(props){
@@ -31,13 +32,13 @@ class RegisterPage extends React.Component{
                     e.target.reset();
                 }}>
                     <label htmlFor="cnpj">CNPJ</label>
-                    <input type="text"
+                    <MaskedInput mask="11.111.111/1111-11" type="text"
                            ref={ node => cnpjInput = node }
                            name="cnpj" />
 
                     <label htmlFor="name">Name</label>
                     <input
-                        type="name"
+                        type="text"
                         ref={ node => nameInput = node}
                         name="name" />
 

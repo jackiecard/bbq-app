@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import {default as UUID} from "node-uuid"
-import ItemListComponent from './ItemListComponent'
 import * as itemActions from '../../actions/itemActions'
 
 class ItemPurchasePage extends React.Component{
-    constructor(props, currentItem){
+    constructor(props){
         super(props)
     }
 
@@ -14,10 +13,7 @@ class ItemPurchasePage extends React.Component{
             return
         }
         return products.map(product => {
-            return <option key={ product }
-                           value={ product }>
-                            { product }
-                        </option>
+            return <option key={ product } value={ product }>{ product }</option>
         })
     }
 
@@ -98,7 +94,7 @@ class ItemPurchasePage extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return { items: state.item.list }
+    return state
 }
 
 const mapDispatchToProps = (dispatch) =>{
