@@ -212,6 +212,11 @@ api.route('/item/:id')
          res.json(item)
      })
  })
+ .delete((req, res) => {
+     ItemPurchaseModel.findByIdAndRemove(req.params.id, function (err, item) {
+         res.send({ item });
+     })
+ })
 
  /*
   *             PURCHASE

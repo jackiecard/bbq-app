@@ -51,13 +51,29 @@ body {
 
 .login-form__action{
     display: flex;
-    display: flex;
     flex-direction: row-reverse;
 }
 
 .login-form__action button, .login-form__action .button{
     margin: 5px 10px;
 }
+
+.items-form{
+    display: flex;
+}
+
+.items-form select,
+.items-form input,
+.items-form label,
+.items-form button{
+    margin: 5px 10px;
+}
+
+.items-table{
+    width: 100%;
+}
+
+.items-table td { width: 33%; }
 
 /* Typography
 –––––––––––––––––––––––––––––––––––––––––––––––––– */

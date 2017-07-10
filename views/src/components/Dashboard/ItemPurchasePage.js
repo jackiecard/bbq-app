@@ -1,13 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import {default as UUID} from "node-uuid"
 import ItemListComponent from './ItemListComponent'
 import * as itemActions from '../../actions/itemActions'
 
 class ItemPurchasePage extends React.Component{
     constructor(props, currentItem){
         super(props)
-
-        console.log('items-------', this.props.items)
     }
 
     generateProductsOptions(products){
@@ -22,22 +21,42 @@ class ItemPurchasePage extends React.Component{
         })
     }
 
+    generateRows() {
+        if(!this.props.items[0]){
+            return <tr>
+                        <td></td>
+                        <td>nothing to show yet.</td>
+                        <td></td>
+                    </tr>
+        }
+
+        var data = this.props.items;
+
+        return data.map(item => {
+            var itemKey = UUID.v4()
+            return <tr key={ itemKey }>
+                        <td>{ item.name }</td>
+                        <td>{ item.quantity }</td>
+                        <td><button>Remove</button></td>
+                    </tr>
+        });
+    }
+
     handleAddItem(itemInput){
         this.props.actions.addItem(itemInput)
     }
 
     render(){
 
-        let items = this.props.items || [ { name: 'Beer', quantity: '2' } ]
-
         let products = [ 'Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage' ]
 
-        var nameInput, quantityInput = null;
+        var nameInput = null;
+        var quantityInput = 1;
 
         return (
 
             <div>
-                <form onSubmit={ e =>{
+                <form className="items-form" onSubmit={ e =>{
                     e.preventDefault();
 
                     var itemInput = {
@@ -56,12 +75,23 @@ class ItemPurchasePage extends React.Component{
 
                     <label htmlFor="email">Qt:</label>
                     <input type="number"
+                           min="1"
+                           defaultValue="1"
                            ref={ node => quantityInput = node }
                            name="quantity" />
 
                     <button type="submit">Add</button>
                 </form>
-                <ItemListComponent items={ items } />
+
+                <h4>List of Items</h4>
+                <div>
+                    <table className="items-table">
+                        <tbody>
+                            { this.generateRows() }
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         )
     }

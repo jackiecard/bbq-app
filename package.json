@@ -31,14 +31,15 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-1": "^6.5.0",
     "express": "^4.14.0",
+    "mongoose": "^4.4.15",
+    "node-uuid": "^1.4.8",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "react-redux": "^5.0.3",
     "react-router": "^3.0.2",
     "redux": "^3.5.2",
     "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.4.1",
-    "mongoose": "^4.4.15"
+    "webpack-dev-server": "^2.4.1"
   },
   "devDependencies": {
     "babel": "^6.23.0",

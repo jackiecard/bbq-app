@@ -8,11 +8,6 @@ class NewPurchasePage extends React.Component{
         super(props)
     }
 
-    handleCompanyChange(e){
-
-        console.log(e.target.value)
-    }
-
     generateCompanyOptions(){
         if(!this.props.companies){
             return
@@ -27,6 +22,7 @@ class NewPurchasePage extends React.Component{
     }
 
     render(){
+        var companyInput = null
 
         return (
             <div>
@@ -40,7 +36,7 @@ class NewPurchasePage extends React.Component{
 
                     e.target.reset();
                 }}>
-                    <select onChange={this.handleCompanyChange}>
+                    <select ref={ node => companyInput = node } onChange={this.handleCompanyChange}>
                         { this.generateCompanyOptions() }
                     </select>
 
