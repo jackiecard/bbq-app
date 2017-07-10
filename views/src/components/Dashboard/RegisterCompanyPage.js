@@ -14,7 +14,7 @@ class RegisterPage extends React.Component{
     }
 
     render(){
-        let cnpjInput, nameInput = null
+        let cnpjInput, nameInput, masker = null
         return (
             <div>
                 <MenuComponent />
@@ -23,7 +23,7 @@ class RegisterPage extends React.Component{
                     e.preventDefault();
 
                     var input = {
-                        cnpj: cnpjInput.value,
+                        cnpj: this.refs.cnpj.mask.getRawValue(),
                         name: nameInput.value
                     }
 
@@ -32,8 +32,10 @@ class RegisterPage extends React.Component{
                     e.target.reset();
                 }}>
                     <label htmlFor="cnpj">CNPJ</label>
-                    <MaskedInput mask="11.111.111/1111-11" type="text"
-                           ref={ node => cnpjInput = node }
+                    <MaskedInput
+                           className="masked-input"
+                           ref="cnpj"
+                           mask="11.111.111/1111-11"
                            name="cnpj" />
 
                     <label htmlFor="name">Name</label>

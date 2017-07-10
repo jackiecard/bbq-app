@@ -1597,7 +1597,8 @@ var RegisterPage = function (_React$Component) {
             var _this2 = this;
 
             var cnpjInput = void 0,
-                nameInput = null;
+                nameInput = void 0,
+                masker = null;
             return _react2.default.createElement(
                 'div',
                 null,
@@ -1613,7 +1614,7 @@ var RegisterPage = function (_React$Component) {
                             e.preventDefault();
 
                             var input = {
-                                cnpj: cnpjInput.value,
+                                cnpj: _this2.refs.cnpj.mask.getRawValue(),
                                 name: nameInput.value
                             };
 
@@ -1626,10 +1627,10 @@ var RegisterPage = function (_React$Component) {
                         { htmlFor: 'cnpj' },
                         'CNPJ'
                     ),
-                    _react2.default.createElement(_reactMaskedinput2.default, { mask: '11.111.111/1111-11', type: 'text',
-                        ref: function ref(node) {
-                            return cnpjInput = node;
-                        },
+                    _react2.default.createElement(_reactMaskedinput2.default, {
+                        className: 'masked-input',
+                        ref: 'cnpj',
+                        mask: '11.111.111/1111-11',
                         name: 'cnpj' }),
                     _react2.default.createElement(
                         'label',
