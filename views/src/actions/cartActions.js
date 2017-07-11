@@ -15,7 +15,7 @@ export const addItemToCartSuccess = (item) => {
     }
 }
 
-export const removeItemSuccess = (item) => {
+export const removeItemFromCartSuccess = (item) => {
     return {
         type: 'REMOVE_ITEM_FROM_CAR',
         item
@@ -34,8 +34,8 @@ export const addItemToCart = (item) => {
     }
 }
 
-export const removeItem = (item) => {
+export const removeItemFromCart = (item) => {
     return (dispatch) => {
-        dispatch(addPurchaseSuccess(item))
+        dispatch(removeItemFromCartSuccess(item))
     }
 }

@@ -1354,6 +1354,8 @@ var NewPurchasePage = function (_React$Component) {
     }, {
         key: 'generateRows',
         value: function generateRows() {
+            var _this2 = this;
+
             if (!this.props.cart.itemsList[0]) {
                 return _react2.default.createElement(
                     'tr',
@@ -1390,7 +1392,10 @@ var NewPurchasePage = function (_React$Component) {
                         null,
                         _react2.default.createElement(
                             'button',
-                            null,
+                            { onClick: function onClick(e) {
+                                    e.preventDefault();
+                                    _this2.handleRemoveItem(item.name, item.quantity);
+                                } },
                             'Remove'
                         )
                     )
@@ -1409,9 +1414,15 @@ var NewPurchasePage = function (_React$Component) {
             this.props.actions.addItemToCart(item);
         }
     }, {
+        key: 'handleRemoveItem',
+        value: function handleRemoveItem(name, quantity) {
+            var item = { name: name, quantity: quantity };
+            this.props.actions.removeItemToCart(item);
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
             var companyInput = null;
             var products = ['Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage'];
@@ -1433,7 +1444,7 @@ var NewPurchasePage = function (_React$Component) {
                             e.preventDefault();
                             console.log(companyInput.value);
 
-                            _this2.handleAddPurchandeToCompany(companyInput.value);
+                            _this3.handleAddPurchandeToCompany(companyInput.value);
 
                             e.target.reset();
                         } },
@@ -1470,7 +1481,7 @@ var NewPurchasePage = function (_React$Component) {
                             'button',
                             { onClick: function onClick(e) {
                                     e.preventDefault();
-                                    _this2.handleAddItem(nameInput.value, quantityInput.value);
+                                    _this3.handleAddItem(nameInput.value, quantityInput.value);
                                 } },
                             'Add'
                         )
@@ -1530,6 +1541,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         actions: {
             addItemToCart: function addItemToCart(item) {
                 return dispatch(cartActions.addItemToCart(item));
+            },
+            removeItemToCart: function removeItemToCart(item) {
+                return dispatch(cartActions.removeItemFromCart(item));
             },
             updateCartCompany: function updateCartCompany(companyId) {
                 return dispatch(cartActions.updateCartCompany(companyId));
@@ -2523,7 +2537,12 @@ exports.default = function () {
         case 'ADD_ITEM_TO_CART':
             return _extends({}, state, { itemsList: state.itemsList.concat(action.item) });
         case 'REMOVE_ITEM_FROM_CAR':
-            return _extends({}, state, { itemsList: state.itemsList.concat(action.item) });
+            return _extends({}, state, { itemsList: state.itemsList.filter(function (item) {
+                    if (JSON.stringify(item) === JSON.stringify(action.item)) {
+                        return;
+                    }
+                    return item;
+                }) });
         default:
             return state;
     }
@@ -2539,7 +2558,7 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.removeItem = exports.addItemToCart = exports.updateCartCompany = exports.removeItemSuccess = exports.addItemToCartSuccess = exports.updateCartCompanySuccess = undefined;
+exports.removeItemFromCart = exports.addItemToCart = exports.updateCartCompany = exports.removeItemFromCartSuccess = exports.addItemToCartSuccess = exports.updateCartCompanySuccess = undefined;
 
 var _errorsActions = __webpack_require__(6);
 
@@ -2563,7 +2582,7 @@ var addItemToCartSuccess = exports.addItemToCartSuccess = function addItemToCart
     };
 };
 
-var removeItemSuccess = exports.removeItemSuccess = function removeItemSuccess(item) {
+var removeItemFromCartSuccess = exports.removeItemFromCartSuccess = function removeItemFromCartSuccess(item) {
     return {
         type: 'REMOVE_ITEM_FROM_CAR',
         item: item
@@ -2582,9 +2601,9 @@ var addItemToCart = exports.addItemToCart = function addItemToCart(item) {
     };
 };
 
-var removeItem = exports.removeItem = function removeItem(item) {
+var removeItemFromCart = exports.removeItemFromCart = function removeItemFromCart(item) {
     return function (dispatch) {
-        dispatch(addPurchaseSuccess(item));
+        dispatch(removeItemFromCartSuccess(item));
     };
 };
 

@@ -10,7 +10,12 @@ export default (state = initialUserState, action) => {
         case 'ADD_ITEM_TO_CART':
             return { ...state, itemsList: state.itemsList.concat(action.item) }
         case 'REMOVE_ITEM_FROM_CAR':
-            return { ...state, itemsList: state.itemsList.concat(action.item) }
+            return { ...state, itemsList: state.itemsList.filter(item => {
+                    if(JSON.stringify(item) === JSON.stringify(action.item)){
+                        return
+                    }
+                    return item
+            })  }
         default:
             return state
     }

@@ -41,7 +41,10 @@ class NewPurchasePage extends React.Component{
             return <tr key={ itemKey }>
                         <td>{ item.name }</td>
                         <td>{ item.quantity }</td>
-                        <td><button>Remove</button></td>
+                        <td><button onClick={(e) => {
+                                e.preventDefault();
+                                this.handleRemoveItem(item.name, item.quantity)
+                            }}>Remove</button></td>
                     </tr>});
     }
 
@@ -52,6 +55,11 @@ class NewPurchasePage extends React.Component{
     handleAddItem(name, quantity){
         var item = { name: name, quantity: quantity }
         this.props.actions.addItemToCart(item)
+    }
+
+    handleRemoveItem(name, quantity){
+        var item = { name: name, quantity: quantity }
+        this.props.actions.removeItemToCart(item)
     }
 
     render(){
@@ -143,6 +151,7 @@ const mapDispatchToProps = (dispatch) =>{
     return{
         actions: {
             addItemToCart: item => dispatch(cartActions.addItemToCart(item)),
+            removeItemToCart: item => dispatch(cartActions.removeItemFromCart(item)),
             updateCartCompany: companyId => dispatch(cartActions.updateCartCompany(companyId))
         }
     }
