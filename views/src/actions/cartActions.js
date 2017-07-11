@@ -1,12 +1,6 @@
 import * as errorActions from './errorsActions';
 import { browserHistory } from 'react-router';
 
-export const createCartSuccess = (cart) => {
-    return {
-        type: 'CREATE_CART',
-        cart
-    }
-}
 export const updateCartCompanySuccess = (companyId) => {
     return {
         type: 'UPDATE_CART_COMPANY',
@@ -14,23 +8,17 @@ export const updateCartCompanySuccess = (companyId) => {
     }
 }
 
-export const addItemSuccess = (item) => {
+export const addItemToCartSuccess = (item) => {
     return {
-        type: 'ADD_ITEM',
+        type: 'ADD_ITEM_TO_CART',
         item
     }
 }
 
 export const removeItemSuccess = (item) => {
     return {
-        type: 'REMOVE_ITEM',
+        type: 'REMOVE_ITEM_FROM_CAR',
         item
-    }
-}
-
-export const createCart = () => {
-    return (dispatch) => {
-        dispatch(createCartSuccess())
     }
 }
 
@@ -40,9 +28,9 @@ export const updateCartCompany = (companyId) => {
     }
 }
 
-export const addItem = (item) => {
+export const addItemToCart = (item) => {
     return (dispatch) => {
-        dispatch(addItemSuccess(item))
+        dispatch(addItemToCartSuccess(item))
     }
 }
 

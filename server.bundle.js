@@ -1061,7 +1061,7 @@ var DashboardPage = function (_React$Component) {
                     _react2.default.createElement(
                         'td',
                         null,
-                        'nothing'
+                        'nothing to show yet.'
                     ),
                     _react2.default.createElement('td', null)
                 );
@@ -1086,7 +1086,11 @@ var DashboardPage = function (_React$Component) {
                     _react2.default.createElement(
                         'td',
                         null,
-                        '50'
+                        _react2.default.createElement(
+                            'button',
+                            null,
+                            '0'
+                        )
                     )
                 );
             });
@@ -1105,7 +1109,7 @@ var DashboardPage = function (_React$Component) {
                 ),
                 _react2.default.createElement(
                     'table',
-                    null,
+                    { className: 'table-dashboard' },
                     _react2.default.createElement(
                         'tbody',
                         null,
@@ -1294,10 +1298,6 @@ var _companyActions = __webpack_require__(20);
 
 var companyActions = _interopRequireWildcard(_companyActions);
 
-var _itemActions = __webpack_require__(38);
-
-var itemActions = _interopRequireWildcard(_itemActions);
-
 var _cartActions = __webpack_require__(42);
 
 var cartActions = _interopRequireWildcard(_cartActions);
@@ -1318,10 +1318,7 @@ var NewPurchasePage = function (_React$Component) {
     function NewPurchasePage(props) {
         _classCallCheck(this, NewPurchasePage);
 
-        var _this = _possibleConstructorReturn(this, (NewPurchasePage.__proto__ || Object.getPrototypeOf(NewPurchasePage)).call(this, props));
-
-        _this.props.actions.createCart();
-        return _this;
+        return _possibleConstructorReturn(this, (NewPurchasePage.__proto__ || Object.getPrototypeOf(NewPurchasePage)).call(this, props));
     }
 
     _createClass(NewPurchasePage, [{
@@ -1357,8 +1354,7 @@ var NewPurchasePage = function (_React$Component) {
     }, {
         key: 'generateRows',
         value: function generateRows() {
-            console.log(this.props.companies);
-            if (!this.props.items[0]) {
+            if (!this.props.cart.itemsList[0]) {
                 return _react2.default.createElement(
                     'tr',
                     null,
@@ -1372,7 +1368,7 @@ var NewPurchasePage = function (_React$Component) {
                 );
             }
 
-            var data = this.props.items;
+            var data = this.props.cart.itemsList;
 
             return data.map(function (item) {
                 var itemKey = _nodeUuid2.default.v4();
@@ -1402,16 +1398,15 @@ var NewPurchasePage = function (_React$Component) {
             });
         }
     }, {
-        key: 'handleCompanyChange',
-        value: function handleCompanyChange(e) {
-            console.log(e.target.value);
-            this.props.actions.updateCartCompany(e.target.value);
+        key: 'handleAddPurchandeToCompany',
+        value: function handleAddPurchandeToCompany(companyId) {
+            this.props.actions.updateCartCompany(companyId);
         }
     }, {
         key: 'handleAddItem',
         value: function handleAddItem(name, quantity) {
             var item = { name: name, quantity: quantity };
-            this.props.actions.addItem(item);
+            this.props.actions.addItemToCart(item);
         }
     }, {
         key: 'render',
@@ -1420,7 +1415,7 @@ var NewPurchasePage = function (_React$Component) {
 
             var companyInput = null;
             var products = ['Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage'];
-            // var itemsTable = [];
+
             var nameInput = null;
             var quantityInput = 1;
 
@@ -1437,8 +1432,9 @@ var NewPurchasePage = function (_React$Component) {
                     'form',
                     { onSubmit: function onSubmit(e) {
                             e.preventDefault();
+                            console.log(companyInput.value);
 
-                            _this2.handleAddPurchandeToCompany(companyInput);
+                            _this2.handleAddPurchandeToCompany(companyInput.value);
 
                             e.target.reset();
                         } },
@@ -1446,35 +1442,39 @@ var NewPurchasePage = function (_React$Component) {
                         'select',
                         { ref: function ref(node) {
                                 return companyInput = node;
-                            }, onChange: this.handleCompanyChange },
+                            } },
                         this.generateCompanyOptions()
                     ),
                     _react2.default.createElement(
-                        'select',
-                        { ref: function ref(node) {
-                                return nameInput = node;
-                            } },
-                        this.generateProductsOptions(products)
-                    ),
-                    _react2.default.createElement(
-                        'label',
-                        { htmlFor: 'email' },
-                        'Qt:'
-                    ),
-                    _react2.default.createElement('input', { type: 'number',
-                        min: '1',
-                        defaultValue: '1',
-                        ref: function ref(node) {
-                            return quantityInput = node;
-                        },
-                        name: 'quantity' }),
-                    _react2.default.createElement(
-                        'button',
-                        { onClick: function onClick(e) {
-                                e.preventDefault();
-                                _this2.handleAddItem(nameInput.value, quantityInput.value);
-                            } },
-                        'Add'
+                        'div',
+                        { className: 'add-item' },
+                        _react2.default.createElement(
+                            'select',
+                            { ref: function ref(node) {
+                                    return nameInput = node;
+                                } },
+                            this.generateProductsOptions(products)
+                        ),
+                        _react2.default.createElement(
+                            'label',
+                            { htmlFor: 'email' },
+                            'Qt:'
+                        ),
+                        _react2.default.createElement('input', { type: 'number',
+                            min: '1',
+                            defaultValue: '1',
+                            ref: function ref(node) {
+                                return quantityInput = node;
+                            },
+                            name: 'quantity' }),
+                        _react2.default.createElement(
+                            'button',
+                            { onClick: function onClick(e) {
+                                    e.preventDefault();
+                                    _this2.handleAddItem(nameInput.value, quantityInput.value);
+                                } },
+                            'Add'
+                        )
                     ),
                     _react2.default.createElement(
                         'h4',
@@ -1510,7 +1510,6 @@ var NewPurchasePage = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
     return {
         companies: state.company.list,
-        items: state.item.list,
         cart: state.cart
     };
 };
@@ -1518,14 +1517,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            addPurchaseToSelectedCompany: function addPurchaseToSelectedCompany(updatedCompany) {
-                return dispatch(companyActions.addPurchaseToCompany(updatedCompany));
-            },
-            addItem: function addItem(item) {
-                return dispatch(itemActions.addItem(item));
-            },
-            createCart: function createCart() {
-                return dispatch(cartActions.createCart());
+            addItemToCart: function addItemToCart(item) {
+                return dispatch(cartActions.addItemToCart(item));
             },
             updateCartCompany: function updateCartCompany(companyId) {
                 return dispatch(cartActions.updateCartCompany(companyId));
@@ -2206,68 +2199,7 @@ module.exports = require("react-dom/server");
 
 /***/ }),
 /* 37 */,
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.removeItem = exports.addItem = exports.removeItemSuccess = exports.addItemSuccess = undefined;
-
-var _axios = __webpack_require__(7);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-var _errorsActions = __webpack_require__(6);
-
-var errorActions = _interopRequireWildcard(_errorsActions);
-
-var _reactRouter = __webpack_require__(1);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var addItemSuccess = exports.addItemSuccess = function addItemSuccess(item) {
-    return {
-        type: 'ADD_ITEM',
-        item: item
-    };
-};
-
-var removeItemSuccess = exports.removeItemSuccess = function removeItemSuccess(item) {
-    return {
-        type: 'REMOVE_ITEM',
-        item: item
-    };
-};
-
-var addItem = exports.addItem = function addItem(item) {
-    return function (dispatch) {
-        return _axios2.default.post('/api/items', item).then(function (response) {
-            dispatch(addItemSuccess(response.data));
-        }).catch(function (error) {
-            dispatch(errorActions.sendItemErrors(error.response.data));
-            throw error;
-        });
-    };
-};
-
-var removeItem = exports.removeItem = function removeItem(item) {
-    return function (dispatch) {
-        return _axios2.default.delete('/api/items', item).then(function (response) {
-            dispatch(addItemSuccess(response.data));
-        }).catch(function (error) {
-            dispatch(errorActions.sendItemErrors(error.response.data));
-            throw error;
-        });
-    };
-};
-
-/***/ }),
+/* 38 */,
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2567,7 +2499,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var initialUserState = {
     company: '',
-    itens: []
+    itemsList: []
 };
 
 exports.default = function () {
@@ -2575,14 +2507,12 @@ exports.default = function () {
     var action = arguments[1];
 
     switch (action.type) {
-        case 'CREATE_CART':
-            return state;
         case 'UPDATE_CART_COMPANY':
             return _extends({}, state, { company: action.companyId });
-        case 'ADD_ITEM':
-            return _extends({}, state, { itens: state.itens.concat(action.cart) });
-        case 'REMOVE_ITEM':
-            return _extends({}, state, { itens: state.itens.concat(action.cart) });
+        case 'ADD_ITEM_TO_CART':
+            return _extends({}, state, { itemsList: state.itemsList.concat(action.item) });
+        case 'REMOVE_ITEM_FROM_CAR':
+            return _extends({}, state, { itemsList: state.itemsList.concat(action.item) });
         default:
             return state;
     }
@@ -2598,7 +2528,7 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.removeItem = exports.addItem = exports.updateCartCompany = exports.createCart = exports.removeItemSuccess = exports.addItemSuccess = exports.updateCartCompanySuccess = exports.createCartSuccess = undefined;
+exports.removeItem = exports.addItemToCart = exports.updateCartCompany = exports.removeItemSuccess = exports.addItemToCartSuccess = exports.updateCartCompanySuccess = undefined;
 
 var _errorsActions = __webpack_require__(6);
 
@@ -2608,12 +2538,6 @@ var _reactRouter = __webpack_require__(1);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var createCartSuccess = exports.createCartSuccess = function createCartSuccess(cart) {
-    return {
-        type: 'CREATE_CART',
-        cart: cart
-    };
-};
 var updateCartCompanySuccess = exports.updateCartCompanySuccess = function updateCartCompanySuccess(companyId) {
     return {
         type: 'UPDATE_CART_COMPANY',
@@ -2621,23 +2545,17 @@ var updateCartCompanySuccess = exports.updateCartCompanySuccess = function updat
     };
 };
 
-var addItemSuccess = exports.addItemSuccess = function addItemSuccess(item) {
+var addItemToCartSuccess = exports.addItemToCartSuccess = function addItemToCartSuccess(item) {
     return {
-        type: 'ADD_ITEM',
+        type: 'ADD_ITEM_TO_CART',
         item: item
     };
 };
 
 var removeItemSuccess = exports.removeItemSuccess = function removeItemSuccess(item) {
     return {
-        type: 'REMOVE_ITEM',
+        type: 'REMOVE_ITEM_FROM_CAR',
         item: item
-    };
-};
-
-var createCart = exports.createCart = function createCart() {
-    return function (dispatch) {
-        dispatch(createCartSuccess());
     };
 };
 
@@ -2647,9 +2565,9 @@ var updateCartCompany = exports.updateCartCompany = function updateCartCompany(c
     };
 };
 
-var addItem = exports.addItem = function addItem(item) {
+var addItemToCart = exports.addItemToCart = function addItemToCart(item) {
     return function (dispatch) {
-        dispatch(addItemSuccess(item));
+        dispatch(addItemToCartSuccess(item));
     };
 };
 

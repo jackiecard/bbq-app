@@ -11,7 +11,7 @@ class DashboardPage extends React.Component{
         if(this.props.companyList.length === 0){
             return <tr>
                         <td></td>
-                        <td>nothing</td>
+                        <td>nothing to show yet.</td>
                         <td></td>
                     </tr>
         }
@@ -22,7 +22,7 @@ class DashboardPage extends React.Component{
             return <tr key={ company.SUCCESS.cnpj }>
                         <td>{ company.SUCCESS.cnpj }</td>
                         <td>{ company.SUCCESS.name }</td>
-                        <td>50</td>
+                        <td><button>0</button></td>
                     </tr>
         });
     }
@@ -32,7 +32,7 @@ class DashboardPage extends React.Component{
             <div>
                 <MenuComponent />
                 <h1>Dashboard</h1>
-                <table>
+                <table className="table-dashboard">
                     <tbody>
                         { this.generateRows() }
                     </tbody>

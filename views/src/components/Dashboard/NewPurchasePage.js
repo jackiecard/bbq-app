@@ -3,13 +3,11 @@ import { connect } from 'react-redux'
 import MenuComponent from './MenuComponent'
 import {default as UUID} from "node-uuid"
 import * as companyActions from '../../actions/companyActions'
-import * as itemActions from '../../actions/itemActions'
 import * as cartActions from '../../actions/cartActions'
 
 class NewPurchasePage extends React.Component{
     constructor(props){
         super(props)
-        this.props.actions.createCart()
     }
 
     generateCompanyOptions(){
@@ -32,12 +30,11 @@ class NewPurchasePage extends React.Component{
     }
 
     generateRows() {
-        console.log(this.props.companies)
-        if(!this.props.items[0]){
+        if(!this.props.cart.itemsList[0]){
             return <tr><td></td><td>nothing to show yet.</td><td></td></tr>
         }
 
-        var data = this.props.items;
+        var data = this.props.cart.itemsList;
 
         return data.map(item => {
             var itemKey = UUID.v4()
@@ -48,22 +45,21 @@ class NewPurchasePage extends React.Component{
                     </tr>});
     }
 
-    handleCompanyChange(e){
-        console.log(e.target.value)
-        this.props.actions.updateCartCompany(e.target.value)
+    handleAddPurchandeToCompany(companyId){
+        this.props.actions.updateCartCompany(companyId)
     }
 
     handleAddItem(name, quantity){
         var item = { name: name, quantity: quantity }
-        this.props.actions.addItem(item)
+        this.props.actions.addItemToCart(item)
     }
 
     render(){
         var companyInput = null
         let products = [ 'Bread', 'Beer', 'Meat', 'Chocolate', 'Tomatoes', 'Sausage' ]
-        // var itemsTable = [];
-        var nameInput = null;
-        var quantityInput = 1;
+
+        var nameInput = null
+        var quantityInput = 1
 
         return (
             <div>
@@ -72,34 +68,36 @@ class NewPurchasePage extends React.Component{
 
                 <form onSubmit={ e =>{
                     e.preventDefault();
+                    console.log(companyInput.value)
 
-                    this.handleAddPurchandeToCompany(companyInput)
+                    this.handleAddPurchandeToCompany(companyInput.value)
 
                     e.target.reset();
                  }}>
-                    <select ref={ node => companyInput = node } onChange={this.handleCompanyChange}>
+                    <select ref={ node => companyInput = node }>
                         { this.generateCompanyOptions() }
                     </select>
 
                     {/*
                             Add Items
                     */}
+                    <div className="add-item">
+                        <select ref={ node => nameInput = node }>
+                            { this.generateProductsOptions(products) }
+                        </select>
 
-                    <select ref={ node => nameInput = node }>
-                        { this.generateProductsOptions(products) }
-                    </select>
+                        <label htmlFor="email">Qt:</label>
+                        <input type="number"
+                               min="1"
+                               defaultValue="1"
+                               ref={ node => quantityInput = node }
+                               name="quantity" />
 
-                    <label htmlFor="email">Qt:</label>
-                    <input type="number"
-                           min="1"
-                           defaultValue="1"
-                           ref={ node => quantityInput = node }
-                           name="quantity" />
-
-                    <button onClick={(e) => {
-                            e.preventDefault();
-                            this.handleAddItem(nameInput.value, quantityInput.value)
-                        }}>Add</button>
+                        <button onClick={(e) => {
+                                e.preventDefault();
+                                this.handleAddItem(nameInput.value, quantityInput.value)
+                            }}>Add</button>
+                    </div>
 
                     {/*
                             List of Added Items
@@ -125,7 +123,6 @@ class NewPurchasePage extends React.Component{
 const mapStateToProps = (state, ownProps) => {
     return {
                 companies: state.company.list,
-                items: state.item.list,
                 cart: state.cart
             }
 }
@@ -133,9 +130,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) =>{
     return{
         actions: {
-            addPurchaseToSelectedCompany: updatedCompany => dispatch(companyActions.addPurchaseToCompany(updatedCompany)),
-            addItem: item => dispatch(itemActions.addItem(item)),
-            createCart: () => dispatch(cartActions.createCart()),
+            addItemToCart: item => dispatch(cartActions.addItemToCart(item)),
             updateCartCompany: companyId => dispatch(cartActions.updateCartCompany(companyId))
         }
     }

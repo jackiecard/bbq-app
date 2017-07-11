@@ -1,18 +1,16 @@
 const initialUserState = {
     company: '',
-    itens: []
+    itemsList: []
 }
 
 export default (state = initialUserState, action) => {
     switch (action.type) {
-        case 'CREATE_CART':
-            return state
         case 'UPDATE_CART_COMPANY':
             return { ...state, company: action.companyId }
-        case 'ADD_ITEM':
-            return { ...state, itens: state.itens.concat(action.cart) }
-        case 'REMOVE_ITEM':
-            return { ...state, itens: state.itens.concat(action.cart) }
+        case 'ADD_ITEM_TO_CART':
+            return { ...state, itemsList: state.itemsList.concat(action.item) }
+        case 'REMOVE_ITEM_FROM_CAR':
+            return { ...state, itemsList: state.itemsList.concat(action.item) }
         default:
             return state
     }
