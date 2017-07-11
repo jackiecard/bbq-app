@@ -4,6 +4,11 @@
     margin: auto;
 }
 
+.app-name{
+    font-size: 1.2em;
+    
+}
+
 .menu-wrapper{
     text-align: right;
 }

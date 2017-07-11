@@ -1030,7 +1030,17 @@ var App = function App(props) {
     return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement('div', { className: 'logo' }),
+        _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement('div', { className: 'logo' }),
+            ' ',
+            _react2.default.createElement(
+                'span',
+                { className: 'app-name' },
+                'BBQ App'
+            )
+        ),
         props.children
     );
 };
