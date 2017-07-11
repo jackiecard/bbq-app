@@ -1324,7 +1324,7 @@ var NewPurchasePage = function (_React$Component) {
     _createClass(NewPurchasePage, [{
         key: 'generateCompanyOptions',
         value: function generateCompanyOptions() {
-            if (!this.props.companies) {
+            if (!this.props.companies.length) {
                 return;
             }
             var data = this.props.companies;
@@ -1418,17 +1418,16 @@ var NewPurchasePage = function (_React$Component) {
 
             var nameInput = null;
             var quantityInput = 1;
+            var partial = void 0;
 
-            return _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(_MenuComponent2.default, null),
-                _react2.default.createElement(
-                    'h1',
+            if (!this.props.companies.length) {
+                partial = _react2.default.createElement(
+                    'div',
                     null,
-                    'New Purchase'
-                ),
-                _react2.default.createElement(
+                    'Better register a company first ;)'
+                );
+            } else {
+                partial = _react2.default.createElement(
                     'form',
                     { onSubmit: function onSubmit(e) {
                             e.preventDefault();
@@ -1499,7 +1498,19 @@ var NewPurchasePage = function (_React$Component) {
                         { type: 'submit' },
                         'Purchase'
                     )
-                )
+                );
+            }
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_MenuComponent2.default, null),
+                _react2.default.createElement(
+                    'h1',
+                    null,
+                    'New Purchase'
+                ),
+                partial
             );
         }
     }]);

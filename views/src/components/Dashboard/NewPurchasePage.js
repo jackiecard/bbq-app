@@ -11,7 +11,7 @@ class NewPurchasePage extends React.Component{
     }
 
     generateCompanyOptions(){
-        if(!this.props.companies){
+        if(!this.props.companies.length){
             return
         }
         var data = this.props.companies;
@@ -60,11 +60,13 @@ class NewPurchasePage extends React.Component{
 
         var nameInput = null
         var quantityInput = 1
+        let partial;
 
-        return (
-            <div>
-                <MenuComponent />
-                <h1>New Purchase</h1>
+        if(!this.props.companies.length){
+            partial = <div>Better register a company first ;)</div>
+        }
+        else{
+            partial =
 
                 <form onSubmit={ e =>{
                     e.preventDefault();
@@ -114,6 +116,16 @@ class NewPurchasePage extends React.Component{
 
                     <button type="submit">Purchase</button>
                 </form>
+
+        }
+
+        return (
+            <div>
+                <MenuComponent />
+                <h1>New Purchase</h1>
+
+                { partial }
+
 
             </div>
         )
