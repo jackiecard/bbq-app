@@ -683,6 +683,33 @@ api.route('/item/:id').get(function (req, res) {
  *             PURCHASE
  *
  */
+api.route('/purchased').post(function (req, res) {
+    var purchase = new _purchaseModel2.default();
+
+    purchase.userId = req.body.userId;
+
+    req.body.items.map(function (item) {
+        var newItem = new _itemPurchaseModel2.default();
+
+        newItem.quantity = item.quantity;
+        newItem.name = item.name;
+
+        newItem.save(function (err) {
+            if (err) {
+                return res.send(err);
+            }
+            purchase.items.push(newItem);
+        });
+    });
+
+    purchase.save(function (err) {
+        if (err) {
+            return res.send(err);
+        }
+
+        res.json({ 'SUCCESS': purchase });
+    });
+});
 api.route('/purchases').get(function (req, res) {
     _purchaseModel2.default.find(function (err, purchase) {
         if (err) {
@@ -1302,6 +1329,10 @@ var _cartActions = __webpack_require__(42);
 
 var cartActions = _interopRequireWildcard(_cartActions);
 
+var _purchaseActions = __webpack_require__(46);
+
+var purchaseActions = _interopRequireWildcard(_purchaseActions);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -1406,6 +1437,13 @@ var NewPurchasePage = function (_React$Component) {
         key: 'handleAddPurchandeToCompany',
         value: function handleAddPurchandeToCompany(companyId) {
             this.props.actions.updateCartCompany(companyId);
+            var purchase = {
+                userId: this.props.userId,
+                companyId: companyId,
+                items: this.props.cart.itemsList
+            };
+            this.props.actions.addPurchase(purchase);
+            console.log("------ purchase", purchase);
         }
     }, {
         key: 'handleAddItem',
@@ -1532,7 +1570,8 @@ var NewPurchasePage = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
     return {
         companies: state.company.list,
-        cart: state.cart
+        cart: state.cart,
+        userId: state.login.AUTHENTICATED._id
     };
 };
 
@@ -1547,6 +1586,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             },
             updateCartCompany: function updateCartCompany(companyId) {
                 return dispatch(cartActions.updateCartCompany(companyId));
+            },
+            addPurchase: function addPurchase(purchase) {
+                return dispatch(purchaseActions.addPurchase(purchase));
             }
         }
     };
@@ -2059,21 +2101,26 @@ var _cartReducers = __webpack_require__(41);
 
 var _cartReducers2 = _interopRequireDefault(_cartReducers);
 
+var _purchaseReducers = __webpack_require__(47);
+
+var _purchaseReducers2 = _interopRequireDefault(_purchaseReducers);
+
 var _errorsReducers = __webpack_require__(30);
 
 var _errorsReducers2 = _interopRequireDefault(_errorsReducers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// rootReducers
 exports.default = (0, _redux.combineReducers)({
     signup: _signupReducers2.default,
     errors: _errorsReducers2.default,
     login: _loginReducers2.default,
     company: _companyReducers2.default,
     item: _itemReducers2.default,
-    cart: _cartReducers2.default
+    cart: _cartReducers2.default,
+    purchase: _purchaseReducers2.default
 });
+// rootReducers
 
 /***/ }),
 /* 32 */
@@ -3457,6 +3504,74 @@ MaskedInput.defaultProps = {
 /***/ (function(module, exports) {
 
 module.exports = require("prop-types");
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.addPurchase = exports.addPurchaseSuccess = undefined;
+
+var _axios = __webpack_require__(7);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _errorsActions = __webpack_require__(6);
+
+var errorActions = _interopRequireWildcard(_errorsActions);
+
+var _reactRouter = __webpack_require__(1);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var addPurchaseSuccess = exports.addPurchaseSuccess = function addPurchaseSuccess(purchase) {
+    return {
+        type: 'ADD_PURCHASE_SUCCESS',
+        purchase: purchase
+    };
+};
+
+var addPurchase = exports.addPurchase = function addPurchase(data) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/purchased', data).then(function (response) {
+            dispatch(addPurchaseSuccess(response.data));
+            _reactRouter.browserHistory.push('/dashboard');
+        }).catch(function (error) {
+            dispatch(errorActions.sendCompanyErrors(error.response.data));
+            throw error;
+        });
+    };
+};
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case 'ADD_PURCHASE_SUCCESS':
+            return action.purchase;
+        default:
+            return state;
+    }
+};
 
 /***/ })
 /******/ ]);

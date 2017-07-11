@@ -5,6 +5,7 @@ import login from './loginReducers';
 import company from './companyReducers';
 import item from './itemReducers';
 import cart from './cartReducers';
+import purchase from './purchaseReducers';
 import errors from './errorsReducers';
 
 export default combineReducers({
@@ -13,5 +14,6 @@ export default combineReducers({
     login: login,
     company: company,
     item: item,
-    cart: cart
+    cart: cart,
+    purchase: purchase
 });

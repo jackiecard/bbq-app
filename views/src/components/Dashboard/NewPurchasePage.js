@@ -4,6 +4,7 @@ import MenuComponent from './MenuComponent'
 import {default as UUID} from "node-uuid"
 import * as companyActions from '../../actions/companyActions'
 import * as cartActions from '../../actions/cartActions'
+import * as purchaseActions from '../../actions/purchaseActions'
 
 class NewPurchasePage extends React.Component{
     constructor(props){
@@ -50,6 +51,13 @@ class NewPurchasePage extends React.Component{
 
     handleAddPurchandeToCompany(companyId){
         this.props.actions.updateCartCompany(companyId)
+        let purchase = {
+            userId: this.props.userId,
+            companyId: companyId,
+            items: this.props.cart.itemsList
+        }
+        this.props.actions.addPurchase(purchase)
+        console.log("------ purchase", purchase)
     }
 
     handleAddItem(name, quantity){
@@ -143,7 +151,8 @@ class NewPurchasePage extends React.Component{
 const mapStateToProps = (state, ownProps) => {
     return {
                 companies: state.company.list,
-                cart: state.cart
+                cart: state.cart,
+                userId: state.login.AUTHENTICATED._id
             }
 }
 
@@ -152,7 +161,8 @@ const mapDispatchToProps = (dispatch) =>{
         actions: {
             addItemToCart: item => dispatch(cartActions.addItemToCart(item)),
             removeItemToCart: item => dispatch(cartActions.removeItemFromCart(item)),
-            updateCartCompany: companyId => dispatch(cartActions.updateCartCompany(companyId))
+            updateCartCompany: companyId => dispatch(cartActions.updateCartCompany(companyId)),
+            addPurchase: purchase => dispatch(purchaseActions.addPurchase(purchase))
         }
     }
 }

@@ -222,6 +222,34 @@ api.route('/item/:id')
   *             PURCHASE
   *
   */
+  api.route('/purchased')
+      .post((req, res) => {
+          var purchase =  new PurchaseModel()
+
+          purchase.userId = req.body.userId
+
+          req.body.items.map(item => {
+              var newItem =  new ItemPurchaseModel();
+
+              newItem.quantity = item.quantity
+              newItem.name = item.name
+
+              newItem.save((err) => {
+                  if(err){
+                      return res.send(err)
+                  }
+                  purchase.items.push(newItem)
+              })
+          })
+
+          purchase.save((err) => {
+              if(err){
+                  return res.send(err)
+              }
+
+              res.json({ 'SUCCESS': purchase })
+          })
+      })
   api.route('/purchases')
       .get((req, res) => {
           PurchaseModel.find((err, purchase) => {
